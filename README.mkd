@@ -33,7 +33,21 @@ use utf8;
 |
 ```
 
-And cursor is in `|`. If you open C++ file, you can select `main` for C.
+And cursor is in `|`. If you open `lib/Foo.pm`, and type `<enter>` in `package`.  You get following.
+
+```perl
+package Foo;
+use strict;
+use warnings
+use utf8;
+
+|
+
+1
+```
+
+
+If you open C++ file, you can select `main` for C.
 
 Author:
 -------

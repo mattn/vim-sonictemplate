@@ -33,7 +33,7 @@ use utf8;
 |
 ```
 
-And cursor is in '|'. If you open C++ file, you can select `main` for C.
+And cursor is in `|`. If you open C++ file, you can select `main` for C.
 
 Author:
 -------

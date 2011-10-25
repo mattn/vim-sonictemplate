@@ -23,7 +23,7 @@ Then you can select `package` or `script` for perl filetype.
 :Template script
 ```
 
-Type <enter> in 'script', you can see following.
+Type `<enter>` in `script`, you can see following.
 
 ```perl
 use strict;

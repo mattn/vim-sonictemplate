@@ -9,7 +9,7 @@ Usage:
 Open new file
 
 ```sh
-# vim foo.pl
+vim foo.pl
 ```
 
 ```vim

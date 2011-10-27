@@ -30,10 +30,10 @@ use strict;
 use warnings
 use utf8;
 
-|
+_
 ```
 
-And cursor is in `|`. If you open `lib/Foo.pm`, and type `<enter>` in `package`.  You get following.
+And cursor is in `_`. If you open `lib/Foo.pm`, and type `<enter>` in `package`.  You get following.
 
 ```perl
 package Foo;
@@ -41,7 +41,7 @@ use strict;
 use warnings
 use utf8;
 
-|
+_
 
 1
 ```

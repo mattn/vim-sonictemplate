@@ -32,7 +32,7 @@ endfunction
 
 function! s:Template(name)
   let buffer_is_not_empty = search('[^ \t]', 'wn')
-  if !exists('g:template_vim_use_always') || g:template_vim_use_always == 0
+  if exists('g:template_vim_only_first') && g:template_vim_only_first == 1
     if buffer_is_not_empty
       echomsg 'This buffer is already modified.'
       return
@@ -67,7 +67,7 @@ function! s:Template(name)
   if len(c) == 0
     return
   endif
-  if !exists('g:template_vim_use_always') || g:template_vim_use_always == 0
+  if exists('g:template_vim_only_first') && g:template_vim_only_first == 1
     silent! %d _
     silent! put = c
     silent! normal! ggdd

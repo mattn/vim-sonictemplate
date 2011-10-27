@@ -20,7 +20,11 @@
 
 command! -nargs=1 -complete=customlist,TemplateComplete Template call s:Template(<f-args>)
 
-let s:tmpldir = expand('<sfile>:p:h:h') . '/template/'
+if exists('g:template_vim_template_dir')
+  let s:tmpldir = g:template_vim_template_dir
+else
+  let s:tmpldir = expand('<sfile>:p:h:h') . '/template/'
+endif
 
 function! TemplateComplete(lead, cmdline, curpos)
   return map(split(globpath(s:tmpldir, a:lead.'*.'.&ft), "\n"), 'fnamemodify(v:val, ":t:r")')

@@ -1,4 +1,4 @@
-*template.txt*	Template for Vim
+*template-vim.txt*	Template for Vim
 
 	   -------------------------------------------------------
 			  Template: easy way coding
@@ -11,7 +11,7 @@ Site: http://mattn.github.com/template-vim
 License: BSD style license
 
 ==============================================================================
-CONTENTS                                                    *template-contents*
+CONTENTS                                                *template-vim-contents*
 
 Introduction           |template-introduction|
 Install                |template-install|
@@ -20,7 +20,7 @@ Customize              |template-customize|
 Write Your Template    |template-writetemplate|
 
 ==============================================================================
-INTRODUCTION                                   *template-introduction* *template*
+INTRODUCTION                                        *template-vim-introduction*
 
 |Template| is easy way to coding.
 
@@ -29,7 +29,7 @@ INTRODUCTION                                   *template-introduction* *template
  * Flexible customization.
 
 ==============================================================================
-INSTALL                                                      *template-install*
+INSTALL                                                  *template-vim-install*
 
 Install the distributed files into Vim runtime directory which is usually
 ~/.vim/, or $HOME/vimfiles on Windows.
@@ -38,7 +38,7 @@ If you install pathogen that provided from Tim Pope, you should extract the
 file into 'bundle' directory.
 
 ==============================================================================
-TUTORIAL                                                    *template-tutorial*
+TUTORIAL                                                *template-vim-tutorial*
 
 For example, you are writing C++ file.
 
@@ -105,14 +105,14 @@ For example, you are writing C++ file.
   }
 <
 ==============================================================================
-CUSTOMIZE                                                  *template-customize*
+CUSTOMIZE                                              *template-vim-customize*
 
 You can modify template directory for your-self templates. 
 >
   let g:template_vim_template_dir = '/path/to/your/template/directory'
 <
 ==============================================================================
-WRITE YOUR TEMPLATE                                    *template-writetemplate*
+WRITE YOUR TEMPLATE                                *template-vim-writetemplate*
 
 Templates are stored in the directory that "g:template_vim_template_dir"
 variable specified. On unix, directory structure is following.

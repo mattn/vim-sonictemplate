@@ -84,6 +84,9 @@ function! s:Template(name)
         silent! normal dd
       endif
       let c = indent . substitute(c, "\n", "\n".indent, 'g')
+      if &expandtab || indent =~ '^ *$'
+        let c = substitute(c, "\t", repeat(' ', min([len(indent), &tabstop])), 'g')
+      endif
       silent! put! = c
     endif
     if stridx(c, '{{_cursor_}}')

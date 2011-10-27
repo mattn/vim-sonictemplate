@@ -83,8 +83,8 @@ function! s:Template(name)
         let c = c[:-2]
       endif
       let line = getline('.')
-      let indent = substitute(line, '^\(\s*\)', '\1', '')
-      if line =~ '^\s*$'
+      let indent = matchstr(line, '^\(\s*\)')
+      if line =~ '^\s*$' && line('.') != line('$')
         silent! normal dd
       endif
       let c = indent . substitute(c, "\n", "\n".indent, 'g')
@@ -96,6 +96,7 @@ function! s:Template(name)
     if stridx(c, '{{_cursor_}}')
       silent! call search('{{_cursor_}}', 'w')
       silent! s/{{_cursor_}}//g
+      silent! exe "normal! \<c-o>"
     endif
   endif
 endfunction

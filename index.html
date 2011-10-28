@@ -1,0 +1,96 @@
+<!doctype html>
+<head>
+	<title>SonicTemplate.vim</title>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" href="static/css/style-sites.css" type="text/css" />
+	<!--[if IE]>
+	<script type="text/javascript">
+		document.createElement('header');
+		document.createElement('section');
+		document.createElement('nav');
+		document.createElement('aside');
+		document.createElement('footer');
+		document.createElement('article');
+		</script>
+	<![endif]--> 
+	<script type="text/javascript" src="static/js/jquery-latest.js"></script>
+	<script type="text/javascript">
+	$(function() {
+		showTTYURL($('#tty')[0], "output.json");
+	});
+	</script>
+</head>
+<body>
+	<img id="logo" src="static/images/sonictemplate-vim-logo.png" title="雛" alt="雛" />
+	<h2>vim plugins for hi-speed programming.</h2>
+	<section id="content">
+		<div class="blocked-content">
+			<article id="whats">
+				<h2 class="maintitle">Whats</h2>
+				<p>Easy and high speed coding method</p>
+			</article>
+		</div>
+		<br />
+		<div class="blocked-content">
+			<article id="install">
+				<h2 class="maintitle">Install</h2>
+				<p>copy plugin/sonictemplate.vim to plugin directory. and copy autoload/sonictemplate.vim to autoload directory.</p>
+<pre class="code">
+# cp plugin/sonictemplate.vim ~/.vim/plugin/.
+# cp autoload/sonictemplate.vim ~/.vim/autoload/.
+</pre>
+				<p>if you install <a href="http://www.vim.org/scripts/script.php?script_id=2332">pathogen.vim</a>, you can make it work with only copying sonictemplate-vim directory to bundle directory.</p>
+<pre class="code">
+# cp -r sonictemplate-vim ~/.vim/bundle/.
+</pre>
+			</article>
+		</div>
+		<br />
+		<div class="blocked-content">
+			<article id="howworkthis">
+				<h2 class="maintitle">How This Work</h2>
+				<p>below is a movie when using sonictemplate.vim</p>
+				<div id="video">
+				<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="563" height="423" codebase="http://active.macromedia.com/flash5/cabs/swflash.cab#version=7,0,0,0">
+				<param name="movie" value="sonictemplate-vim.swf" />
+				<param name="play" value="false" />
+				<param name="loop" value="false" />
+				<param name="wmode" value="transparent" />
+				<param name="quality" value="low" />
+				<embed src="sonictemplate-vim.swf" width="563" height="423" quality="low" loop="false" wmode="transparent" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/shockwave/download/index.cgi?p1_prod_version=shockwaveflash"></embed>
+				</object>
+				<script src='sonictemplate-vim.js'></script>
+				</div>
+			</article>
+		</div>
+		<br />
+		<div class="blocked-content">
+			<article id="repo">
+				<h2 class="maintitle">Repository</h2>
+				<p>
+				<a href="http://github.com/mattn/sonictemplate-vim/">http://github.com/mattn/sonictemplate-vim/</a>
+				</p>
+			</article>
+		</div>
+		<br />
+		<div class="blocked-content">
+			<article id="license">
+				<h2 class="maintitle">License</h2>
+				<p>BSD style license.</p>
+			</article>
+		</div>
+		<br />
+		<div class="blocked-content">
+			<article id="author">
+				<h2 class="maintitle">Author</h2>
+				<p>Project authors:</p>
+				<div>
+					<ul>
+						<li><a href="http://mattn.kaoriya.net/" rel="me">Yasuhiro Matsumoto</a></li>
+					</ul>
+				</div>
+			</article>
+		</div>
+		<br />
+	</section>
+</body>

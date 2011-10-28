@@ -1,26 +1,26 @@
 "=============================================================================
-" template.vim
+" sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 28-Oct-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
 
-if exists('g:template_vim_template_dir')
-  let s:tmpldir = g:template_vim_template_dir
+if exists('g:sonictemplate_vim_template_dir')
+  let s:tmpldir = g:sonictemplate_vim_template_dir
 else
   let s:tmpldir = expand('<sfile>:p:h:h') . '/template/'
 endif
 
-function! template#select() abort
-  let name = input(':Template ', '', 'customlist,template#complete')
+function! sonictemplate#select() abort
+  let name = input(':Template ', '', 'customlist,sonictemplate#complete')
   if name == ''
     return
   endif
-  call template#apply(name)
+  call sonictemplate#apply(name)
 endfunction
 
-function! template#complete(lead, cmdline, curpos) abort
+function! sonictemplate#complete(lead, cmdline, curpos) abort
   if search('[^ \t]', 'wn')
     return map(split(globpath(join([s:tmpldir, &ft], '/'), 'snip-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
   else
@@ -28,7 +28,7 @@ function! template#complete(lead, cmdline, curpos) abort
   endif
 endfunction
 
-function! template#apply(name) abort
+function! sonictemplate#apply(name) abort
   let buffer_is_not_empty = search('[^ \t]', 'wn')
   if search('[^ \t]', 'wn')
     let fs = split(globpath(join([s:tmpldir, &ft], '/'), 'snip-' . a:name . '.*'), "\n")

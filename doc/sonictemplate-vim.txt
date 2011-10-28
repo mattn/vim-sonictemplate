@@ -1,35 +1,35 @@
-*template-vim.txt*	Template for Vim
+*sonictemplate-vim.txt*	SonicTemplate for Vim
 
 	   -------------------------------------------------------
-			  Template: easy way coding
+		  SonicTemplate: hi speed coding method
 	   -------------------------------------------------------
 
 Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 WebSite: http://mattn.kaoriya.net/
-Repository: http://github.com/mattn/template-vim
-Site: http://mattn.github.com/template-vim
+Repository: http://github.com/mattn/sonictemplate-vim
+Site: http://mattn.github.com/sonictemplate-vim
 License: BSD style license
 
 ==============================================================================
-CONTENTS                                                *template-vim-contents*
+CONTENTS                                           *sonictemplate-vim-contents*
 
-Introduction           |template-introduction|
-Install                |template-install|
-Tutorial               |template-tutorial|
-Customize              |template-customize|
-Write Your Template    |template-writetemplate|
+Introduction           |sonictemplate-introduction|
+Install                |sonictemplate-install|
+Tutorial               |sonictemplate-tutorial|
+Customize              |sonictemplate-customize|
+Write Your Template    |sonictemplate-writetemplate|
 
 ==============================================================================
-INTRODUCTION                                        *template-vim-introduction*
+INTRODUCTION                                   *sonictemplate-vim-introduction*
 
-|Template| is easy way to coding.
+|SonicTemplate| is easy and high speed coding method.
 
  * Choose template for the filetype
  * Few typings.
  * Flexible customization.
 
 ==============================================================================
-INSTALL                                                  *template-vim-install*
+INSTALL                                             *sonictemplate-vim-install*
 
 Install the distributed files into Vim runtime directory which is usually
 ~/.vim/, or $HOME/vimfiles on Windows.
@@ -38,7 +38,7 @@ If you install pathogen that provided from Tim Pope, you should extract the
 file into 'bundle' directory.
 
 ==============================================================================
-TUTORIAL                                                *template-vim-tutorial*
+TUTORIAL                                           *sonictemplate-vim-tutorial*
 
 For example, you are writing C++ file.
 
@@ -105,24 +105,24 @@ For example, you are writing C++ file.
   }
 <
 ==============================================================================
-CUSTOMIZE                                              *template-vim-customize*
+CUSTOMIZE                                         *sonictemplate-vim-customize*
 
 You can modify template directory for your-self templates. 
 >
   let g:template_vim_template_dir = '/path/to/your/template/directory'
 <
 ==============================================================================
-WRITE YOUR TEMPLATE                                *template-vim-writetemplate*
+WRITE YOUR TEMPLATE                           *sonictemplate-vim-writetemplate*
 
-Templates are stored in the directory that "g:template_vim_template_dir"
+Templates are stored in the directory that "g:sonictemplate_vim_template_dir"
 variable specified. On unix, directory structure is following.
 Note that I'm using pathogen-vim.
 >
-  ~/.vim/bundle/template-vim
+  ~/.vim/bundle/sonictemplate-vim
       plugin
-        template.vim
+        sonictemplate.vim
       doc
-        template.txt
+        sonictemplate.txt
       template
         go                             ... filetype go
           base-main.go                   ... base main

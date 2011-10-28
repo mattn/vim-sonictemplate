@@ -26,21 +26,28 @@ else
   let s:tmpldir = expand('<sfile>:p:h:h') . '/template/'
 endif
 
-function! TemplateComplete(lead, cmdline, curpos)
-  return map(split(globpath(s:tmpldir, a:lead.'*.'.&ft), "\n"), 'fnamemodify(v:val, ":t:r")')
+function! TemplateComplete(lead, cmdline, curpos) abort
+  if search('[^ \t]', 'wn')
+    return map(split(globpath(join([s:tmpldir, &ft], '/'), 'snip-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+  else
+    return map(split(globpath(join([s:tmpldir, &ft], '/'), 'base-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+  endif
 endfunction
 
-function! s:Template(name)
+function! s:Template(name) abort
   let buffer_is_not_empty = search('[^ \t]', 'wn')
-  if exists('g:template_vim_only_first') && g:template_vim_only_first == 1
-    if buffer_is_not_empty
-      echomsg 'This buffer is already modified.'
-      return
-    endif
+  if search('[^ \t]', 'wn')
+    let fs = split(globpath(join([s:tmpldir, &ft], '/'), 'snip-' . a:name . '.*'), "\n")
+  else
+    let fs = split(globpath(join([s:tmpldir, &ft], '/'), 'base-' . a:name . '.*'), "\n")
   endif
-  let f = s:tmpldir . a:name . '.' . &ft
+  if len(fs) == 0
+    echomsg 'Template '.a:name.' is not exists.'
+    return
+  endif
+  let f = fs[0]
   if !filereadable(f)
-    echomsg 'Template '.a:name.' is not exists.' . f
+    echomsg 'Template '.a:name.' is not exists.'
     return
   endif
   let c = join(readfile(f, "b"), "\n")
@@ -67,37 +74,29 @@ function! s:Template(name)
   if len(c) == 0
     return
   endif
-  if exists('g:template_vim_only_first') && g:template_vim_only_first == 1
+  if !buffer_is_not_empty
     silent! %d _
     silent! put = c
     silent! normal! ggdd
-    silent! call search('{{_cursor_}}', 'w')
-    silent! %s/{{_cursor_}}//g
   else
-    if !buffer_is_not_empty
-      silent! %d _
-      silent! put = c
-      silent! normal! ggdd
-    else
-      if c[len(c)-1] == "\n"
-        let c = c[:-2]
-      endif
-      let line = getline('.')
-      let indent = matchstr(line, '^\(\s*\)')
-      if line =~ '^\s*$' && line('.') != line('$')
-        silent! normal dd
-      endif
-      let c = indent . substitute(c, "\n", "\n".indent, 'g')
-      if len(indent) && (&expandtab || indent =~ '^ \+$')
-        let c = substitute(c, "\t", repeat(' ', min([len(indent), &tabstop])), 'g')
-      endif
-      silent! put! = c
+    if c[len(c)-1] == "\n"
+      let c = c[:-2]
     endif
-    if stridx(c, '{{_cursor_}}')
-      silent! call search('{{_cursor_}}', 'w')
-      silent! s/{{_cursor_}}//g
-      silent! exe "normal! \<c-o>"
+    let line = getline('.')
+    let indent = matchstr(line, '^\(\s*\)')
+    if line =~ '^\s*$' && line('.') != line('$')
+      silent! normal dd
     endif
+    let c = indent . substitute(c, "\n", "\n".indent, 'g')
+    if len(indent) && (&expandtab || indent =~ '^ \+$')
+      let c = substitute(c, "\t", repeat(' ', min([len(indent), &tabstop])), 'g')
+    endif
+    silent! put! = c
+  endif
+  if stridx(c, '{{_cursor_}}')
+    silent! call search('{{_cursor_}}', 'w')
+    silent! s/{{_cursor_}}//g
+    silent! exe "normal! \<c-o>"
   endif
 endfunction
 

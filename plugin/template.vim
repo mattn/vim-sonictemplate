@@ -3,28 +3,24 @@
 " This filetype plugin adds one command for the buffers:
 "
 "   :Template {name}
-"
 "       Load template named as {name} in the current buffer.
-"       Template file is stored in ~/.vim/template.
-"       If you are using pathogen.vim, template folder is located at following. 
-"
-"         ~/.vim/bundle/template-vim
-"             plugin
-"               template.vim # This file.
-"             template
-"               main.go
-"               package.go
-"               package.perl
-"               script.perl
-"
 
 command! -nargs=1 -complete=customlist,TemplateComplete Template call s:Template(<f-args>)
+inoremap <c-y>t <esc>:call TemplateSelect()<cr>
 
 if exists('g:template_vim_template_dir')
   let s:tmpldir = g:template_vim_template_dir
 else
   let s:tmpldir = expand('<sfile>:p:h:h') . '/template/'
 endif
+
+function! TemplateSelect() abort
+  let name = input(':Template ', '', 'customlist,TemplateComplete')
+  if name == ''
+    return
+  endif
+  call s:Template(name)
+endfunction
 
 function! TemplateComplete(lead, cmdline, curpos) abort
   if search('[^ \t]', 'wn')

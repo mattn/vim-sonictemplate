@@ -2,7 +2,7 @@
 " File: sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 28-Oct-2011.
-" Version: 0.01
+" Version: 0.02
 " WebPage: http://github.com/mattn/sonictemplate-vim
 " Description: Easy and high speed coding method
 " Usage:

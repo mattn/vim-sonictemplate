@@ -124,31 +124,52 @@ Note that I'm using pathogen-vim.
       doc
         template.txt
       template
-        main.go
-        package.go
-        package.perl
-        script.perl
-        ...
-<
-Template can have some keywords.
+        go                             ... filetype go
+          base-main.go                   ... base main
+          base-package.go                ... base package
+          snip-goroutine.go              ... snippet for goroutine
+          ...
+        perl                           ... filetype perl
+          base-package.pl                ... base package
+          base-script.pl                 ... base script
+          snip-dbi-connect-sqlite.pl     ... snippet for DBI/SQLite
+          ...
 
-|{{_name_}}|      the filename without extension.
+1. The filename have following rule.
 
-  If you are opening "foo.pl" for perl, {{_name_}} become "foo".
+    |[kind]|-|[name]|.|[extension]|
 
-|{{_cursor_}}|    : cursor position.
+  |[kind]|  'base' or 'snip' should be used.
 
-  When expanded template, cursor will be moved to there.
+    'base' is used when buffer is empty.
 
-|{{_input_:var}}| : ask the value of "var".
+  |[name]| template name
 
-  When expanded template, cursor will be moved to there.
+    Words in the name must join with '-'.
 
-|{{_expr_:xxx}}|  : expression in vimscript.
+  |[extension]| file name extension like ".c".
 
-  For example, "Current Time:|{{_expr_:strftime('%c')}}|" will be
+    If several extensions are exists in same directory, the first found is used.
+
+2. Template can have some keywords.
+
+  |{{_name_}}|      the filename without extension.
+
+    If you are opening "foo.pl" for perl, {{_name_}} become "foo".
+
+  |{{_cursor_}}|    : cursor position.
+
+    When expanded template, cursor will be moved to there.
+
+  |{{_input_:var}}| : ask the value of "var".
+
+    When expanded template, cursor will be moved to there.
+
+  |{{_expr_:xxx}}|  : expression in vimscript.
+
+    For example, "Current Time:|{{_expr_:strftime('%c')}}|" will be
 >
-  Current Time: 2011/10/27 20:19:00
+    Current Time: 2011/10/27 20:19:00
 <
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:

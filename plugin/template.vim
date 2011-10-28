@@ -70,6 +70,7 @@ function! s:Template(name) abort
     let val = input(var . ":")
     let c = substitute(c, '\V{{_input_:'.var.'}}', '\=val', 'g')
   endfor
+  let c = substitute(c, '{{_if_:\(.\{-}\);\(.\{-}\)\(;\(.\{-}\)\)\{-}}}', '\=eval(submatch(1))?submatch(2):submatch(4)', 'g')
   let c = substitute(c, '{{_expr_:\(.\{-}\)}}', '\=eval(submatch(1))', 'g')
   if len(c) == 0
     return
@@ -96,8 +97,9 @@ function! s:Template(name) abort
   if stridx(c, '{{_cursor_}}')
     silent! call search('{{_cursor_}}', 'w')
     silent! s/{{_cursor_}}//g
-    silent! exe "normal! \<c-o>"
   endif
+  silent! exe "normal! \<c-o>"
+  startinsert
 endfunction
 
 " vim:ts=4:sw=4:et

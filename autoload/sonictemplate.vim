@@ -88,7 +88,7 @@ function! sonictemplate#apply(name) abort
     endif
     silent! put! = c
   endif
-  if stridx(c, '{{_cursor_}}')
+  if stridx(c, '{{_cursor_}}') != -1
     silent! call search('{{_cursor_}}\zs', 'w')
     silent! exe "normal a".repeat("\<bs>", 12)
   endif

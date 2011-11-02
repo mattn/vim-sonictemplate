@@ -1,7 +1,7 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 28-Oct-2011.
+" Last Change: 02-Nov-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -17,7 +17,7 @@ function! sonictemplate#select() abort
   if name == ''
     return
   endif
-  call sonictemplate#apply(name)
+  silent! call sonictemplate#apply(name)
 endfunction
 
 function! sonictemplate#complete(lead, cmdline, curpos) abort
@@ -89,11 +89,9 @@ function! sonictemplate#apply(name) abort
     silent! put! = c
   endif
   if stridx(c, '{{_cursor_}}')
-    silent! call search('{{_cursor_}}', 'w')
-    silent! s/{{_cursor_}}//g
+    silent! call search('{{_cursor_}}\zs', 'w')
+    silent! exe "normal a".repeat("\<bs>", 12)
   endif
-  silent! exe "normal! \<c-o>"
-  startinsert
 endfunction
 
 let &cpo = s:save_cpo

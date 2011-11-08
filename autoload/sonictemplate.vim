@@ -1,7 +1,7 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 02-Nov-2011.
+" Last Change: 08-Nov-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -12,12 +12,12 @@ else
   let s:tmpldir = expand('<sfile>:p:h:h') . '/template/'
 endif
 
-function! sonictemplate#select() abort
+function! sonictemplate#select(mode) abort
   let name = input(':Template ', '', 'customlist,sonictemplate#complete')
   if name == ''
     return
   endif
-  silent! call sonictemplate#apply(name)
+  call sonictemplate#apply(name, a:mode)
 endfunction
 
 function! sonictemplate#complete(lead, cmdline, curpos) abort
@@ -28,7 +28,7 @@ function! sonictemplate#complete(lead, cmdline, curpos) abort
   endif
 endfunction
 
-function! sonictemplate#apply(name) abort
+function! sonictemplate#apply(name, mode) abort
   let buffer_is_not_empty = search('[^ \t]', 'wn')
   if search('[^ \t]', 'wn')
     let fs = split(globpath(join([s:tmpldir, &ft], '/'), 'snip-' . a:name . '.*'), "\n")
@@ -89,8 +89,13 @@ function! sonictemplate#apply(name) abort
     silent! put! = c
   endif
   if stridx(c, '{{_cursor_}}') != -1
-    silent! call search('{{_cursor_}}\zs', 'w')
-    silent! exe "normal a".repeat("\<bs>", 12)
+    if a:mode == 'n'
+      silent! call search('\zs{{_cursor_}}', 'w')
+      silent! exe "normal ".repeat("x", 12)
+    else
+      silent! call search('{{_cursor_}}\zs', 'w')
+      call feedkeys(repeat("\<bs>", 12))
+    endif
   endif
 endfunction
 

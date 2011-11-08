@@ -1,7 +1,7 @@
 "=============================================================================
 " File: sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 02-Nov-2011.
+" Last Change: 08-Nov-2011.
 " Version: 0.06
 " WebPage: http://github.com/mattn/sonictemplate-vim
 " Description: Easy and high speed coding method
@@ -21,8 +21,12 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 command! -nargs=1 -complete=customlist,sonictemplate#complete Template call sonictemplate#apply(<f-args>)
-nnoremap <c-y>t :call sonictemplate#select()<cr>
-inoremap <c-y>t <space><bs><c-\><c-o>:call sonictemplate#select()<cr>
+
+nnoremap <plug>(sonictemplate) :call sonictemplate#select('n')<cr>
+inoremap <plug>(sonictemplate) <space><bs><c-o>:call sonictemplate#select('i')<cr>
+
+nmap <unique> <c-y>t <plug>(sonictemplate)
+imap <unique> <c-y>t <plug>(sonictemplate)
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

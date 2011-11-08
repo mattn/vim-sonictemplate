@@ -42,6 +42,9 @@ install_details: |
   # git clone http://github.com/mattn/sonictemplate-vim.git
 
 versions:
+- '0.08': |
+   This is an upgrade for SonicTemplate.vim:
+   [fixed]  fixed error.
 - '0.07': |
    This is an upgrade for SonicTemplate.vim:
    [fixed]  fixed key asign.

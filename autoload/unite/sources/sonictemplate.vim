@@ -1,4 +1,4 @@
-" File:    sonictemplate
+" File:    sonictemplate.vim
 " Author:  kmnk <kmnknmk+vim@gmail.com>
 " Version: 0.1.0
 " License: BSD style license

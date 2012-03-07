@@ -17,15 +17,30 @@ let s:source = {
 
 function! s:source.gather_candidates(args, context)"{{{
   call unite#print_message('[sonictemplate]')
-  return map(sonictemplate#templates(), '{
-\   "word"   : s:to_template_name(v:val),
-\   "source" : s:source.name,
-\   "kind"   : s:source.name,
-\   "action__mode" : len(a:args) > 0 ? args[0] : "n"
-\ }')
+  return map(
+\   s:uniq(map(sonictemplate#templates(), 's:to_template_name(v:val)')), '{
+\     "word"   : v:val,
+\     "source" : s:source.name,
+\     "kind"   : s:source.name,
+\     "action__mode" : len(a:args) > 0 ? args[0] : "n"
+\   }'
+\ )
 endfunction"}}}
 
 " local functions {{{
+function! s:uniq(list)
+  let has = {}
+  let uniq_list = []
+  for i in a:list
+    if exists(printf("has['%s']", i))
+      continue
+    endif
+    let has[i] = 1
+    call add(uniq_list, i)
+  endfor
+  return uniq_list
+endfunction
+
 function! s:to_template_name(path)
   return substitute(fnamemodify(a:path, ':t:r'), '^\%(base\|snip\)-', '', '')
 endfunction

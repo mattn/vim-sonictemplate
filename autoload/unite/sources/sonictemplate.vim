@@ -34,7 +34,6 @@ function! s:uniq(candidates)
   let has = {}
   let uniq_list = []
   for candidate in a:candidates
-    echo candidate.action__path
     let name = candidate.action__name
     if exists(printf("has['%s']", name))
       continue

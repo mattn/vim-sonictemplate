@@ -17,26 +17,30 @@ let s:source = {
 
 function! s:source.gather_candidates(args, context)"{{{
   call unite#print_message('[sonictemplate]')
-  return map(
-\   s:uniq(map(sonictemplate#templates(), 's:to_template_name(v:val)')), '{
-\     "word"   : v:val,
+  return s:uniq(map(
+\     sonictemplate#templates(), '{
+\     "word"   : s:to_template_name(v:val),
 \     "source" : s:source.name,
 \     "kind"   : s:source.name,
-\     "action__mode" : len(a:args) > 0 ? args[0] : "n"
+\     "action__mode" : len(a:args) > 0 ? args[0] : "n",
+\     "action__name" : s:to_template_name(v:val),
+\     "action__path" : v:val,
 \   }'
-\ )
+\ ))
 endfunction"}}}
 
 " local functions {{{
-function! s:uniq(list)
+function! s:uniq(candidates)
   let has = {}
   let uniq_list = []
-  for i in a:list
-    if exists(printf("has['%s']", i))
+  for candidate in a:candidates
+    echo candidate.action__path
+    let name = candidate.action__name
+    if exists(printf("has['%s']", name))
       continue
     endif
-    let has[i] = 1
-    call add(uniq_list, i)
+    let has[name] = 1
+    call add(uniq_list, candidate)
   endfor
   return uniq_list
 endfunction

@@ -13,6 +13,7 @@ endfunction"}}}
 let s:kind = {
 \ 'name' : 'sonictemplate',
 \ 'default_action' : 'insert',
+\ 'parents' : ['file'],
 \ 'action_table' : {},
 \ 'alias_table' : {},
 \}

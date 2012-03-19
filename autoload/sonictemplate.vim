@@ -1,7 +1,7 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 08-Nov-2011.
+" Last Change: 19-Mar-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -21,27 +21,35 @@ function! sonictemplate#select(mode) abort
 endfunction
 
 function! sonictemplate#complete(lead, cmdline, curpos) abort
-  if search('[^ \t]', 'wn')
-    return map(split(globpath(join([s:tmpldir, &ft], '/'), 'snip-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
-  else
-    return map(split(globpath(join([s:tmpldir, &ft], '/'), 'base-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+  let ft = &ft
+  let candidate = map(split(globpath(join([s:tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+  if len(candidate) == 0
+    let ft = tolower(synIDattr(synID(line("."), col("."), 1), "name"))
+    if len(ft) > 0
+      let candidate = map(split(globpath(join([s:tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+    endif
   endif
+  return candidate
 endfunction
 
 function! sonictemplate#apply(name, mode) abort
+  let name = matchstr(a:name, '\S\+')
   let buffer_is_not_empty = search('[^ \t]', 'wn')
-  if search('[^ \t]', 'wn')
-    let fs = split(globpath(join([s:tmpldir, &ft], '/'), 'snip-' . a:name . '.*'), "\n")
-  else
-    let fs = split(globpath(join([s:tmpldir, &ft], '/'), 'base-' . a:name . '.*'), "\n")
+  let ft = &ft
+  let fs = split(globpath(join([s:tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . name . '.*'), "\n")
+  if len(fs) == 0
+    let ft = tolower(synIDattr(synID(line("."), col("."), 1), "name"))
+    if len(ft) > 0
+      let fs = split(globpath(join([s:tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . name . '.*'), "\n")
+    endif
   endif
   if len(fs) == 0
-    echomsg 'Template '.a:name.' is not exists.'
+    echomsg 'Template '.name.' is not exists.'
     return
   endif
   let f = fs[0]
   if !filereadable(f)
-    echomsg 'Template '.a:name.' is not exists.'
+    echomsg 'Template '.name.' is not exists.'
     return
   endif
   let c = join(readfile(f, "b"), "\n")
@@ -91,9 +99,11 @@ function! sonictemplate#apply(name, mode) abort
   if stridx(c, '{{_cursor_}}') != -1
     if a:mode == 'n'
       silent! call search('\zs{{_cursor_}}', 'w')
+      silent! foldopen
       silent! exe "normal ".repeat("x", 12)
     else
       silent! call search('{{_cursor_}}\zs', 'w')
+      silent! foldopen
       call feedkeys(repeat("\<bs>", 12))
     endif
   endif

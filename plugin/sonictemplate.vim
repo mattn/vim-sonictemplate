@@ -1,7 +1,7 @@
 "=============================================================================
 " File: sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 08-Nov-2011.
+" Last Change: 12-Apr-2012.
 " Version: 0.08
 " WebPage: http://github.com/mattn/sonictemplate-vim
 " Description: Easy and high speed coding method
@@ -22,11 +22,16 @@ set cpo&vim
 
 command! -nargs=1 -complete=customlist,sonictemplate#complete Template call sonictemplate#apply(<f-args>, 'n')
 
-nnoremap <plug>(sonictemplate) :call sonictemplate#select('n')<cr>
-inoremap <plug>(sonictemplate) <space><bs><c-o>:call sonictemplate#select('i')<cr>
+if get(g:, 'sonictemplate_key', '') == ''
+  nnoremap <plug>(sonictemplate) :call sonictemplate#select('n')<cr>
+  inoremap <plug>(sonictemplate) <space><bs><c-o>:call sonictemplate#select('i')<cr>
 
-nmap <unique> <c-y>t <plug>(sonictemplate)
-imap <unique> <c-y>t <plug>(sonictemplate)
+  nmap <unique> <c-y>t <plug>(sonictemplate)
+  imap <unique> <c-y>t <plug>(sonictemplate)
+else
+  exe "nnoremap" g:sonictemplate_key ":call sonictemplate#select('n')<cr>"
+  exe "inoremap" g:sonictemplate_key "<space><bs><c-o>:call sonictemplate#select('i')<cr>"
+endif
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

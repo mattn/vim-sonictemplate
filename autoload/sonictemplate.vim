@@ -6,7 +6,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:tmpldir = [expand('<sfile>:p:h:h') . '/template/']
+let s:tmpldir = []
 if exists('g:sonictemplate_vim_template_dir')
   if type(g:sonictemplate_vim_template_dir) == 3
     let s:tmpldir += map(g:sonictemplate_vim_template_dir, 'fnamemodify(expand(v:val), ":p")')
@@ -14,6 +14,7 @@ if exists('g:sonictemplate_vim_template_dir')
     call add(s:tmpldir, fnamemodify(expand(g:sonictemplate_vim_template_dir), ":p"))
   endif
 endif
+call add(s:tmpldir, expand('<sfile>:p:h:h') . '/template/')
 
 function! sonictemplate#select(mode) abort
   let name = input(':Template ', '', 'customlist,sonictemplate#complete')

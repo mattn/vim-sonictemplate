@@ -108,11 +108,11 @@ For example, you are writing C++ file.
 CUSTOMIZE                                         *sonictemplate-vim-customize*
 
 You can modify template directory for your-self templates: >
-  let g:template_vim_template_dir = '/path/to/your/template/directory'
+  let g:sonictemplate_vim_template_dir = '/path/to/your/template/directory'
 <
   or >
 
-  let g:template_vim_template_dir = [
+  let g:sonictemplate_vim_template_dir = [
   \ '$HOME/.vim/template',
   \ '/path/to/another/template/directory'
   \]

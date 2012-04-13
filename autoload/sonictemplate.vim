@@ -1,13 +1,13 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 19-Mar-2012.
+" Last Change: 13-Apr-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
 
 if exists('g:sonictemplate_vim_template_dir')
-  let s:tmpldir = g:sonictemplate_vim_template_dir
+  let s:tmpldir = fnamemodify(expand(g:sonictemplate_vim_template_dir), ':p')
 else
   let s:tmpldir = expand('<sfile>:p:h:h') . '/template/'
 endif

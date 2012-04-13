@@ -1,4 +1,4 @@
 ==============================================================================
-{{_expr_:toupper("{{_input_:title}}")}}{{_expr_:repeat(' ',77-len("{{_input_:title}}")*2-len(expand("%:p:t:r")))}}*{{_expr_:expand("%:p:t:r")}}-{{_input_:title}}*
+{{_expr_:toupper("{{_input_:title}}")}}{{_expr_:repeat(' ',77-strdisplaywidth("{{_input_:title}}")*2-strdisplaywidth(expand("%:p:t:r")))}}*{{_expr_:expand("%:p:t:r")}}-{{_input_:title}}*
 {{_cursor_}}
 

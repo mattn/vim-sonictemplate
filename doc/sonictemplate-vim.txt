@@ -13,11 +13,11 @@ License: BSD style license
 ==============================================================================
 CONTENTS                                           *sonictemplate-vim-contents*
 
-Introduction           |sonictemplate-introduction|
-Install                |sonictemplate-install|
-Tutorial               |sonictemplate-tutorial|
-Customize              |sonictemplate-customize|
-Write Your Template    |sonictemplate-writetemplate|
+Introduction           |sonictemplate-vim-introduction|
+Install                |sonictemplate-vim-install|
+Tutorial               |sonictemplate-vim-tutorial|
+Customize              |sonictemplate-vim-customize|
+Write Your Template    |sonictemplate-vim-writetemplate|
 
 ==============================================================================
 INTRODUCTION                                   *sonictemplate-vim-introduction*
@@ -107,9 +107,15 @@ For example, you are writing C++ file.
 ==============================================================================
 CUSTOMIZE                                         *sonictemplate-vim-customize*
 
-You can modify template directory for your-self templates. 
->
+You can modify template directory for your-self templates: >
   let g:template_vim_template_dir = '/path/to/your/template/directory'
+<
+  or >
+
+  let g:template_vim_template_dir = [
+  \ '$HOME/.vim/template',
+  \ '/path/to/another/template/directory'
+  \]
 <
 ==============================================================================
 WRITE YOUR TEMPLATE                           *sonictemplate-vim-writetemplate*

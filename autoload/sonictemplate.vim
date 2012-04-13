@@ -6,10 +6,13 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:tmpldir = [expand('<sfile>:p:h:h') . '/template/']
 if exists('g:sonictemplate_vim_template_dir')
-  let s:tmpldir = fnamemodify(expand(g:sonictemplate_vim_template_dir), ':p')
-else
-  let s:tmpldir = expand('<sfile>:p:h:h') . '/template/'
+  if type(g:sonictemplate_vim_template_dir) == 3
+    let s:tmpldir += map(g:sonictemplate_vim_template_dir, 'fnamemodify(expand(v:val), ":p")')
+  else
+    call add(s:tmpldir, fnamemodify(expand(g:sonictemplate_vim_template_dir), ":p"))
+  endif
 endif
 
 function! sonictemplate#select(mode) abort
@@ -22,11 +25,16 @@ endfunction
 
 function! sonictemplate#complete(lead, cmdline, curpos) abort
   let ft = &ft
-  let candidate = map(split(globpath(join([s:tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+  let candidate = []
+  for tmpldir in s:tmpldir
+    let candidate += map(split(globpath(join([tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+  endfor
   if len(candidate) == 0
     let ft = tolower(synIDattr(synID(line("."), col("."), 1), "name"))
     if len(ft) > 0
-      let candidate = map(split(globpath(join([s:tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+      for tmpldir in s:tmpldir
+        let candidate += map(split(globpath(join([tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+      endfor
     endif
   endif
   return candidate
@@ -35,14 +43,18 @@ endfunction
 function! sonictemplate#apply(name, mode) abort
   let name = matchstr(a:name, '\S\+')
   let buffer_is_not_empty = search('[^ \t]', 'wn')
-  let ft = &ft
-  let fs = split(globpath(join([s:tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . name . '.*'), "\n")
-  if len(fs) == 0
-    let ft = tolower(synIDattr(synID(line("."), col("."), 1), "name"))
-    if len(ft) > 0
-      let fs = split(globpath(join([s:tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . name . '.*'), "\n")
+  let fs = []
+  for tmpldir in s:tmpldir
+    let ft = &ft
+    let fsl = split(globpath(join([tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . name . '.*'), "\n")
+    if len(fsl) == 0
+      let ft = tolower(synIDattr(synID(line("."), col("."), 1), "name"))
+      if len(ft) > 0
+        let fsl = split(globpath(join([tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . name . '.*'), "\n")
+      endif
     endif
-  endif
+    let fs += fsl
+  endfor
   if len(fs) == 0
     echomsg 'Template '.name.' is not exists.'
     return

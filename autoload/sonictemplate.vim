@@ -1,7 +1,7 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 13-Apr-2012.
+" Last Change: 15-Apr-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -26,18 +26,24 @@ endfunction
 
 function! sonictemplate#complete(lead, cmdline, curpos) abort
   let ft = &ft
-  let candidate = []
+  let tmp = []
   for tmpldir in s:tmpldir
-    let candidate += map(split(globpath(join([tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+    let tmp += map(split(globpath(join([tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
   endfor
-  if len(candidate) == 0
+  if len(tmp) == 0
     let ft = tolower(synIDattr(synID(line("."), col("."), 1), "name"))
     if len(ft) > 0
       for tmpldir in s:tmpldir
-        let candidate += map(split(globpath(join([tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+        let tmp += map(split(globpath(join([tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
       endfor
     endif
   endif
+  let candidate = []
+  for c in tmp
+    if index(candidate, c) == -1
+      call add(candidate, c)
+    endif
+  endfor
   return candidate
 endfunction
 

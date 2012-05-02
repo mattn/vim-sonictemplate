@@ -42,29 +42,32 @@ install_details: |
   # git clone http://github.com/mattn/sonictemplate-vim.git
 
 versions:
+- '0.09': |
+   This is an upgrade for SonicTemplate.vim:
+   [add] added some templates.
 - '0.08': |
    This is an upgrade for SonicTemplate.vim:
-   [fixed]  fixed error.
+   [fixed] fixed error.
 - '0.07': |
    This is an upgrade for SonicTemplate.vim:
-   [fixed]  fixed key asign.
+   [fixed] fixed key asign.
 - '0.06': |
    This is an upgrade for SonicTemplate.vim:
-   [fixed]  fixed _cursor_ behavior.
-   [added]  some java templates.
+   [fixed] fixed _cursor_ behavior.
+   [added] some java templates.
 - '0.05': |
    This is an upgrade for SonicTemplate.vim:
-   [fixed]  oops. dos2unix.
+   [fixed] oops. dos2unix.
 - '0.04': |
    This is an upgrade for SonicTemplate.vim:
-   [fixed]  fixed names of javascript template.
+   [fixed] fixed names of javascript template.
 - '0.03': |
    This is an upgrade for SonicTemplate.vim:
-   [fixed]  fix indent while insert mode.
-   [added]  some java templates.
+   [fixed] fix indent while insert mode.
+   [added] some java templates.
 - '0.02': |
    This is an upgrade for SonicTemplate.vim:
-   [fixed]  snip-file-read.pl
+   [fixed] snip-file-read.pl
 - '0.01': |
    Initial upload
 

@@ -5,7 +5,7 @@ remove-zip:
 	-rm sonictemplate-vim.zip
 
 sonictemplate-vim.zip: remove-zip
-	find template -type f -exec -print | xargs dos2unix --d2u
+	find template -type f -print | xargs fromdos
 	zip -r sonictemplate-vim.zip autoload plugin doc template
 
 release: sonictemplate-vim.zip

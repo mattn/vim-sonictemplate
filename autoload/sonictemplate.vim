@@ -1,7 +1,7 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 15-Apr-2012.
+" Last Change: 28-May-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -97,6 +97,9 @@ function! sonictemplate#apply(name, mode) abort
     return
   endif
   if !buffer_is_not_empty
+    if &expandtab || &tabstop != &shiftwidth
+      let c = substitute(c, "\t", repeat(' ', &shiftwidth), 'g')
+    endif
     silent! %d _
     silent! put = c
     silent! normal! ggdd
@@ -110,8 +113,8 @@ function! sonictemplate#apply(name, mode) abort
       silent! normal dd
     endif
     let c = indent . substitute(c, "\n", "\n".indent, 'g')
-    if len(indent) && (&expandtab || indent =~ '^ \+$')
-      let c = substitute(c, "\t", repeat(' ', min([len(indent), &tabstop])), 'g')
+    if len(indent) && (&expandtab || &tabstop != &shiftwidth || indent =~ '^ \+$')
+      let c = substitute(c, "\t", repeat(' ', min([len(indent), &shiftwidth])), 'g')
     endif
     silent! put! = c
   endif

@@ -1,7 +1,7 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 28-May-2012.
+" Last Change: 29-May-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -71,7 +71,7 @@ function! sonictemplate#apply(name, mode) abort
     echomsg 'Template '.name.' is not exists.'
     return
   endif
-  let c = join(readfile(f, "b"), "\n")
+  let c = join(readfile(f), "\n")
   let c = substitute(c, '{{_name_}}', expand('%:t:r:'), 'g')
   let tmp = c
   let mx = '{{_input_:\(.\{-}\)}}'

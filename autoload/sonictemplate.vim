@@ -112,7 +112,7 @@ function! sonictemplate#apply(name, mode) abort
     if line =~ '^\s*$' && line('.') != line('$')
       silent! normal dd
     endif
-    let c = indent . substitute(c, "\n", "\n".indent, 'g')
+    let c = indent . substitute(substitute(c, "\n", "\n".indent, 'g'), "\n".indent."\n", "\n\n", 'g')
     if len(indent) && (&expandtab || &tabstop != &shiftwidth || indent =~ '^ \+$')
       let c = substitute(c, "\t", repeat(' ', min([len(indent), &shiftwidth])), 'g')
     endif

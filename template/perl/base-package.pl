@@ -1,4 +1,4 @@
-package {{_expr_:substitute(substitute(substitute(expand('%'), '.*lib[\\/]', '', 'g'), '[\\/]', '::', 'g'), '\.pm$', '', 'g')}};
+package {{_expr_:substitute(substitute(expand('%:r'), '.*lib[\\/]', '', 'g'), '[\\/]', '::', 'g')}};
 
 use strict;
 use warnings;

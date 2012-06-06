@@ -1,7 +1,7 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 29-May-2012.
+" Last Change: 06-Jun-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -107,16 +107,23 @@ function! sonictemplate#apply(name, mode) abort
     if c[len(c)-1] == "\n"
       let c = c[:-2]
     endif
-    let line = getline('.')
-    let indent = matchstr(line, '^\(\s*\)')
-    if line =~ '^\s*$' && line('.') != line('$')
-      silent! normal dd
+    if stridx(c, '{{_inline_}}') != -1
+      let c = substitute(c, '{{_inline_}}', '', 'g')
+      let c = join(split(c, "\n"), "")
+      silent! exe "normal! a\<c-r>=c\<cr>"
+      return
+    else
+      let line = getline('.')
+      let indent = matchstr(line, '^\(\s*\)')
+      if line =~ '^\s*$' && line('.') != line('$')
+        silent! normal dd
+      endif
+      let c = indent . substitute(substitute(c, "\n", "\n".indent, 'g'), "\n".indent."\n", "\n\n", 'g')
+      if len(indent) && (&expandtab || &tabstop != &shiftwidth || indent =~ '^ \+$')
+        let c = substitute(c, "\t", repeat(' ', min([len(indent), &shiftwidth])), 'g')
+      endif
+      silent! put! =c
     endif
-    let c = indent . substitute(substitute(c, "\n", "\n".indent, 'g'), "\n".indent."\n", "\n\n", 'g')
-    if len(indent) && (&expandtab || &tabstop != &shiftwidth || indent =~ '^ \+$')
-      let c = substitute(c, "\t", repeat(' ', min([len(indent), &shiftwidth])), 'g')
-    endif
-    silent! put! = c
   endif
   if stridx(c, '{{_cursor_}}') != -1
     if a:mode == 'n'

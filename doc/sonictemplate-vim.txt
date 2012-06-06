@@ -154,6 +154,11 @@ Note that I'm using pathogen-vim.
           base-script.pl                 ... base script
           snip-dbi-connect-sqlite.pl     ... snippet for DBI/SQLite
           ...
+        _                              ... global template
+          base-foo.go                    ... base foo
+          snip-foo.go                    ... snip foo
+<
+  Global template '_' can be applied to any filetypes.
 
 1. The filename have following rule.
 

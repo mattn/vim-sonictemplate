@@ -97,6 +97,7 @@ function! sonictemplate#apply(name, mode) abort
     return
   endif
   if !buffer_is_not_empty
+    let c = substitute(c, '{{_inline_}}', '', 'g')
     if &expandtab || &tabstop != &shiftwidth
       let c = substitute(c, "\t", repeat(' ', &shiftwidth), 'g')
     endif

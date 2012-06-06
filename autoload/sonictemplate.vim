@@ -38,6 +38,9 @@ function! sonictemplate#complete(lead, cmdline, curpos) abort
       endfor
     endif
   endif
+  for tmpldir in s:tmpldir
+    let tmp += map(split(globpath(join([tmpldir, '_'], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+  endfor
   let candidate = []
   for c in tmp
     if index(candidate, c) == -1
@@ -59,6 +62,9 @@ function! sonictemplate#apply(name, mode) abort
       if len(ft) > 0
         let fsl = split(globpath(join([tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . name . '.*'), "\n")
       endif
+    endif
+    if len(fsl) == 0
+      let fsl = split(globpath(join([tmpldir, '_'], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . name . '.*'), "\n")
     endif
     let fs += fsl
   endfor

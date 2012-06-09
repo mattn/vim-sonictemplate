@@ -42,6 +42,12 @@ install_details: |
   # git clone http://github.com/mattn/sonictemplate-vim.git
 
 versions:
+- '0.10': |
+   This is an upgrade for SonicTemplate.vim:
+   [add] added some templates.
+   [add] {{_inline_}} support.
+   [add] add global template '_'.
+   [fix] fix bug that keep blank line.
 - '0.09': |
    This is an upgrade for SonicTemplate.vim:
    [add] added some templates.

@@ -52,7 +52,8 @@ function! sonictemplate#get_filetype()
   return ft
 endfunction
 
-function! s:get_candidate(fts)
+function! s:get_candidate(fts, lead)
+  let tmp = []
   let prefix = search('[^ \t]', 'wn') ? 'snip-' : 'base-'
   for tmpldir in s:tmpldir
     for ft in a:fts
@@ -75,11 +76,11 @@ function! s:get_candidate(fts)
 endfunction
  
 function! sonictemplate#complete(lead, cmdline, curpos) abort
-  return s:get_candidate([&ft, sonictemplate#get_filetype()])
+  return s:get_candidate([&ft, sonictemplate#get_filetype()], a:lead)
 endfunction
 
 function! sonictemplate#complete_intelligent(lead, cmdline, curpos) abort
-  return s:get_candidate([sonictemplate#get_filetype(), &ft])
+  return s:get_candidate([sonictemplate#get_filetype(), &ft], a:lead)
 endfunction
 
 function! sonictemplate#apply(name, mode, ...) abort

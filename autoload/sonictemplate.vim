@@ -172,11 +172,11 @@ function! sonictemplate#apply(name, mode, ...) abort
     if a:mode == 'n'
       silent! call search('\zs{{_cursor_}}', 'w')
       silent! foldopen
-      silent! exe "normal ".repeat("x", 12)
+      silent! normal! 12"_x
     else
       silent! call search('{{_cursor_}}\zs', 'w')
       silent! foldopen
-      call feedkeys(repeat("\<bs>", 12))
+      silent! call feedkeys(repeat("\<bs>", 12))
     endif
   endif
 endfunction

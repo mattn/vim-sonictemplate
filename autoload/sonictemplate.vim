@@ -51,21 +51,19 @@ function! sonictemplate#get_filetype()
   endif
   return ft
 endfunction
- 
-function! sonictemplate#complete(lead, cmdline, curpos) abort
-  let ft = &ft
-  let tmp = []
-  let fts = [&ft, sonictemplate#get_filetype()]
+
+function! s:get_candidate(fts)
+  let prefix = search('[^ \t]', 'wn') ? 'snip-' : 'base-'
   for tmpldir in s:tmpldir
-    for ft in fts
-      let tmp += map(split(globpath(join([tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+    for ft in a:fts
+      let tmp += map(split(globpath(join([tmpldir, ft], '/'), prefix . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
       if len(tmp) > 0
         break
       endif
     endfor
   endfor
   for tmpldir in s:tmpldir
-    let tmp += map(split(globpath(join([tmpldir, '_'], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+    let tmp += map(split(globpath(join([tmpldir, '_'], '/'), prefix . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
   endfor
   let candidate = []
   for c in tmp
@@ -74,32 +72,15 @@ function! sonictemplate#complete(lead, cmdline, curpos) abort
     endif
   endfor
   return candidate
+endfunction
+ 
+function! sonictemplate#complete(lead, cmdline, curpos) abort
+  return s:get_candidate([&ft, sonictemplate#get_filetype()])
 endfunction
 
 function! sonictemplate#complete_intelligent(lead, cmdline, curpos) abort
-  let ft = &ft
-  let tmp = []
-  let fts = [tolower(sonictemplate#get_filetype()), &ft]
-  for tmpldir in s:tmpldir
-    for ft in fts
-      let tmp += map(split(globpath(join([tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
-      if len(tmp) > 0
-        break
-      endif
-    endfor
-  endfor
-  for tmpldir in s:tmpldir
-    let tmp += map(split(globpath(join([tmpldir, '_'], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
-  endfor
-  let candidate = []
-  for c in tmp
-    if index(candidate, c) == -1
-      call add(candidate, c)
-    endif
-  endfor
-  return candidate
+  return s:get_candidate([sonictemplate#get_filetype(), &ft])
 endfunction
-
 
 function! sonictemplate#apply(name, mode, ...) abort
   let name = matchstr(a:name, '\S\+')
@@ -113,7 +94,9 @@ function! sonictemplate#apply(name, mode, ...) abort
   let prefix = search('[^ \t]', 'wn') ? 'snip-' : 'base-'
   for tmpldir in s:tmpldir
     for ft in fts
-      let fs += split(globpath(join([tmpldir, ft], '/'), prefix . name . '.*'), "\n")
+      if len(ft) > 0
+        let fs += split(globpath(join([tmpldir, ft], '/'), prefix . name . '.*'), "\n")
+      endif
     endfor
   endfor
   if len(fs) == 0

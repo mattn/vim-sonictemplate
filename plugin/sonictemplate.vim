@@ -1,7 +1,7 @@
 "=============================================================================
 " File: sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 10-Jun-2012.
+" Last Change: 11-Jun-2012.
 " Version: 0.10
 " WebPage: http://github.com/mattn/sonictemplate-vim
 " Description: Easy and high speed coding method
@@ -24,13 +24,21 @@ command! -nargs=1 -complete=customlist,sonictemplate#complete Template call soni
 
 if get(g:, 'sonictemplate_key', '') == ''
   nnoremap <plug>(sonictemplate) :call sonictemplate#select('n')<cr>
-  inoremap <plug>(sonictemplate) <space><bs><c-o>:call sonictemplate#select('i')<cr>
-
+  inoremap <plug>(sonictemplate) <c-r>=sonictemplate#select('i')<cr>
   nmap <unique> <c-y>t <plug>(sonictemplate)
   imap <unique> <c-y>t <plug>(sonictemplate)
 else
   exe "nnoremap" g:sonictemplate_key ":call sonictemplate#select('n')<cr>"
-  exe "inoremap" g:sonictemplate_key "<space><bs><c-o>:call sonictemplate#select('i')<cr>"
+  exe "inoremap" g:sonictemplate_key "<c-r>=sonictemplate#select('i')<cr>"
+endif
+if get(g:, 'sonictemplate_intelligent_key', '') == ''
+  nnoremap <plug>(sonictemplate-intelligent) :call sonictemplate#select_intelligent('n')<cr>
+  inoremap <plug>(sonictemplate-intelligent) <c-r>=sonictemplate#select_intelligent('i')<cr>
+  nmap <unique> <c-y>T <plug>(sonictemplate-intelligent)
+  imap <unique> <c-y>T <plug>(sonictemplate-intelligent)
+else
+  exe "nnoremap" g:sonictemplate_intelligent_key ":call sonictemplate#select_intelligent('n')<cr>"
+  exe "inoremap" g:sonictemplate_intelligent_key "<c-r>=sonictemplate#select_intelligent('i')<cr>"
 endif
 
 let &cpo = s:save_cpo

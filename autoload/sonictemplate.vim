@@ -1,7 +1,7 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 06-Jun-2012.
+" Last Change: 11-Jun-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -19,25 +19,51 @@ call add(s:tmpldir, expand('<sfile>:p:h:h') . '/template/')
 function! sonictemplate#select(mode) abort
   let name = input(':Template ', '', 'customlist,sonictemplate#complete')
   if name == ''
-    return
+    return ''
   endif
-  call sonictemplate#apply(name, a:mode)
+  call sonictemplate#apply(name, a:mode, 0)
+  return ''
 endfunction
 
+function! sonictemplate#select_intelligent(mode) abort
+  let name = input(':Template ', '', 'customlist,sonictemplate#complete_intelligent')
+  if name == ''
+    return ''
+  endif
+  call sonictemplate#apply(name, a:mode, 1)
+  return ''
+endfunction
+
+function! sonictemplate#get_filetype()
+  let c = col('.')
+  if c == col('$')
+    let c -= 1
+  endif
+  let ft = tolower(synIDattr(synID(line("."), c, 1), "name"))
+  if ft =~ '^css\w'
+    let ft = 'css'
+  elseif ft =~ '^html\w'
+    let ft = 'html'
+  elseif ft =~ '^javaScript'
+    let ft = 'javascript'
+  elseif ft =~ '^xml\w'
+    let ft = 'xml'
+  endif
+  return ft
+endfunction
+ 
 function! sonictemplate#complete(lead, cmdline, curpos) abort
   let ft = &ft
   let tmp = []
+  let fts = [&ft, sonictemplate#get_filetype()]
   for tmpldir in s:tmpldir
-    let tmp += map(split(globpath(join([tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+    for ft in fts
+      let tmp += map(split(globpath(join([tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+      if len(tmp) > 0
+        break
+      endif
+    endfor
   endfor
-  if len(tmp) == 0
-    let ft = tolower(synIDattr(synID(line("."), col("."), 1), "name"))
-    if len(ft) > 0
-      for tmpldir in s:tmpldir
-        let tmp += map(split(globpath(join([tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
-      endfor
-    endif
-  endif
   for tmpldir in s:tmpldir
     let tmp += map(split(globpath(join([tmpldir, '_'], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
   endfor
@@ -50,23 +76,45 @@ function! sonictemplate#complete(lead, cmdline, curpos) abort
   return candidate
 endfunction
 
-function! sonictemplate#apply(name, mode) abort
+function! sonictemplate#complete_intelligent(lead, cmdline, curpos) abort
+  let ft = &ft
+  let tmp = []
+  let fts = [tolower(sonictemplate#get_filetype()), &ft]
+  for tmpldir in s:tmpldir
+    for ft in fts
+      let tmp += map(split(globpath(join([tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+      if len(tmp) > 0
+        break
+      endif
+    endfor
+  endfor
+  for tmpldir in s:tmpldir
+    let tmp += map(split(globpath(join([tmpldir, '_'], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+  endfor
+  let candidate = []
+  for c in tmp
+    if index(candidate, c) == -1
+      call add(candidate, c)
+    endif
+  endfor
+  return candidate
+endfunction
+
+
+function! sonictemplate#apply(name, mode, ...) abort
   let name = matchstr(a:name, '\S\+')
   let buffer_is_not_empty = search('[^ \t]', 'wn')
   let fs = []
+  if get(a:000, 0, 0)
+    let fts = [sonictemplate#get_filetype(), &ft, '_']
+  else
+    let fts = [&ft, sonictemplate#get_filetype(), '_']
+  endif
+  let prefix = search('[^ \t]', 'wn') ? 'snip-' : 'base-'
   for tmpldir in s:tmpldir
-    let ft = &ft
-    let fsl = split(globpath(join([tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . name . '.*'), "\n")
-    if len(fsl) == 0
-      let ft = tolower(synIDattr(synID(line("."), col("."), 1), "name"))
-      if len(ft) > 0
-        let fsl = split(globpath(join([tmpldir, ft], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . name . '.*'), "\n")
-      endif
-    endif
-    if len(fsl) == 0
-      let fsl = split(globpath(join([tmpldir, '_'], '/'), (search('[^ \t]', 'wn') ? 'snip-' : 'base-') . name . '.*'), "\n")
-    endif
-    let fs += fsl
+    for ft in fts
+      let fs += split(globpath(join([tmpldir, ft], '/'), prefix . name . '.*'), "\n")
+    endfor
   endfor
   if len(fs) == 0
     echomsg 'Template '.name.' is not exists.'
@@ -122,9 +170,13 @@ function! sonictemplate#apply(name, mode) abort
     else
       let line = getline('.')
       let indent = matchstr(line, '^\(\s*\)')
-      if line =~ '^\s*$' && line('.') != line('$')
-        silent! normal dd
+      if line !~ '^\s*$'
+        let lhs = col('.') > 1 ? line[:col('.')-2] : ""
+        let rhs = line[len(lhs):]
+        let lhs = lhs[len(indent):]
+        let c = lhs . c . rhs
       endif
+      silent! normal dd
       let c = indent . substitute(substitute(c, "\n", "\n".indent, 'g'), "\n".indent."\n", "\n\n", 'g')
       if len(indent) && (&expandtab || &tabstop != &shiftwidth || indent =~ '^ \+$')
         let c = substitute(c, "\t", repeat(' ', min([len(indent), &shiftwidth])), 'g')

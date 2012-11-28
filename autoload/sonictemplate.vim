@@ -1,7 +1,7 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 27-Jun-2012.
+" Last Change: 28-Nov-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -72,6 +72,18 @@ function! s:get_candidate(fts, lead)
       call add(candidate, c)
     endif
   endfor
+  let filter = s:getopt('filter')
+  if filter != ''
+    let [lhs, rhs] = [[], []]
+    for c in candidate
+      if stridx(c, filter) == 0
+        call add(lhs, c)
+      else
+        call add(rhs, c)
+      endif
+    endfor
+    let candidate = lhs + rhs
+  endif
   return candidate
 endfunction
  
@@ -81,6 +93,20 @@ endfunction
 
 function! sonictemplate#complete_intelligent(lead, cmdline, curpos) abort
   return s:get_candidate([sonictemplate#get_filetype(), &ft], a:lead)
+endfunction
+
+function! s:setopt(k, v)
+  if !exists('b:sonictemplate')
+    let b:sonictemplate = {}
+  endif
+  let b:sonictemplate[a:k] = a:v
+endfunction
+
+function! s:getopt(k)
+  if !exists('b:sonictemplate') || !has_key(b:sonictemplate, a:k)
+    return ''
+  endif
+  return b:sonictemplate[a:k]
 endfunction
 
 function! sonictemplate#apply(name, mode, ...) abort
@@ -134,8 +160,15 @@ function! sonictemplate#apply(name, mode, ...) abort
   if len(c) == 0
     return
   endif
+  let mx = '{{_filter_:\(\w\+\)}}\s*'
+  let bf = matchstr(c, mx)
+  if len(bf) > 0
+    call s:setopt('filter', substitute(bf, mx, '\1', ''))
+    let c = substitute(c, mx, '', 'g')
+  endif
+
   if !buffer_is_not_empty
-    let c = substitute(c, '{{_inline_}}', '', 'g')
+    let c = substitute(c, '{{_inline_}}\s*', '', 'g')
     if &expandtab || &tabstop != &shiftwidth
       let c = substitute(c, "\t", repeat(' ', &shiftwidth), 'g')
     endif

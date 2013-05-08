@@ -75,7 +75,7 @@ function! s:get_candidate(fts, lead)
   let filter = s:getopt('filter')
   if filter == ''
     try
-      let filter = sonictemplate#lang#{&ft}#guess()
+      let filter = sonictemplate#lang#{&ft!=""?&ft:"_"}#guess()
     catch
     endtry
   endif
@@ -115,6 +115,12 @@ function! s:getopt(k)
   return b:sonictemplate[a:k]
 endfunction
 
+let s:vars = {}
+
+function! sonictemplate#getvar(name)
+  return has_key(s:var, a:name) ? s:var[a:name] : ''
+endfunction
+
 function! sonictemplate#apply(name, mode, ...) abort
   let name = matchstr(a:name, '\S\+')
   let buffer_is_not_empty = search('[^ \t]', 'wn')
@@ -145,6 +151,9 @@ function! sonictemplate#apply(name, mode, ...) abort
   let c = substitute(c, '{{_name_}}', expand('%:t:r:'), 'g')
   let tmp = c
   let mx = '{{_input_:\(.\{-}\)}}'
+  if prefix == 'base-'
+    let s:var = {}
+  endif
   let vars = []
   while 1
     let match = matchstr(tmp, mx)
@@ -160,6 +169,7 @@ function! sonictemplate#apply(name, mode, ...) abort
   for var in vars
     let val = input(var . ":")
     let c = substitute(c, '\V{{\(_input_\|_var_\):'.var.'}}', '\=val', 'g')
+    let s:var[var] = val
   endfor
   let mx = '{{_define_:\([^:]\+\):\(.\{-}\)}}\s*'
   while 1
@@ -171,6 +181,7 @@ function! sonictemplate#apply(name, mode, ...) abort
     let val = eval(substitute(match, mx, '\2', 'ig'))
     let c = substitute(c, mx, '', 'g')
     let c = substitute(c, '\V{{_var_:'.var.'}}', '\=val', 'g')
+    let s:var[var] = val
   endwhile
   sandbox let c = substitute(c, '{{_if_:\(.\{-}\);\(.\{-}\)\(;\(.\{-}\)\)\{-}}}', '\=eval(submatch(1))?submatch(2):submatch(4)', 'g')
   sandbox let c = substitute(c, '{{_expr_:\(.\{-}\)}}', '\=eval(submatch(1))', 'g')

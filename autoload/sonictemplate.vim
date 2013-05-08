@@ -115,7 +115,7 @@ function! s:getopt(k)
   return b:sonictemplate[a:k]
 endfunction
 
-let s:vars = {}
+let s:var = {}
 
 function! sonictemplate#getvar(name)
   return has_key(s:var, a:name) ? s:var[a:name] : ''
@@ -221,7 +221,9 @@ function! sonictemplate#apply(name, mode, ...) abort
         let lhs = lhs[len(indent):]
         let c = lhs . c . rhs
       endif
-      silent! normal dd
+      if getline('.') =~ '^\s*$'
+        silent! normal dd
+      endif
       let c = indent . substitute(substitute(c, "\n", "\n".indent, 'g'), "\n".indent."\n", "\n\n", 'g')
       if len(indent) && (&expandtab || &tabstop != &shiftwidth || indent =~ '^ \+$')
         let c = substitute(c, "\t", repeat(' ', min([len(indent), &shiftwidth])), 'g')

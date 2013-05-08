@@ -1,7 +1,7 @@
 "=============================================================================
 " File: sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 11-Jun-2012.
+" Last Change: 01-May-2013.
 " Version: 0.10
 " WebPage: http://github.com/mattn/sonictemplate-vim
 " Description: Easy and high speed coding method
@@ -20,7 +20,7 @@ let g:loaded_sonictemplate_vim = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-command! -nargs=1 -complete=customlist,sonictemplate#complete Template call sonictemplate#apply(<f-args>, 'n')
+exe "command!" "-nargs=1" "-complete=customlist,sonictemplate#complete" get(g:, 'sonictemplate_commandname', 'Template') "call sonictemplate#apply(<f-args>, 'n')"
 
 if get(g:, 'sonictemplate_key', '') == ''
   nnoremap <plug>(sonictemplate) :call sonictemplate#select('n')<cr>

@@ -1,7 +1,7 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 28-Nov-2012.
+" Last Change: 08-May-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -73,6 +73,12 @@ function! s:get_candidate(fts, lead)
     endif
   endfor
   let filter = s:getopt('filter')
+  if filter == ''
+    try
+      let filter = sonictemplate#lang#{&ft}#guess()
+    catch
+    endtry
+  endif
   if filter != ''
     let [lhs, rhs] = [[], []]
     for c in candidate
@@ -153,8 +159,19 @@ function! sonictemplate#apply(name, mode, ...) abort
   endwhile
   for var in vars
     let val = input(var . ":")
-    let c = substitute(c, '\V{{_input_:'.var.'}}', '\=val', 'g')
+    let c = substitute(c, '\V{{\(_input_\|_var_\):'.var.'}}', '\=val', 'g')
   endfor
+  let mx = '{{_define_:\([^:]\+\):\(.\{-}\)}}\s*'
+  while 1
+    let match = matchstr(c, mx)
+    if len(match) == 0
+      break
+    endif
+    let var = substitute(match, mx, '\1', 'ig')
+    let val = eval(substitute(match, mx, '\2', 'ig'))
+    let c = substitute(c, mx, '', 'g')
+    let c = substitute(c, '\V{{_var_:'.var.'}}', '\=val', 'g')
+  endwhile
   sandbox let c = substitute(c, '{{_if_:\(.\{-}\);\(.\{-}\)\(;\(.\{-}\)\)\{-}}}', '\=eval(submatch(1))?submatch(2):submatch(4)', 'g')
   sandbox let c = substitute(c, '{{_expr_:\(.\{-}\)}}', '\=eval(submatch(1))', 'g')
   if len(c) == 0

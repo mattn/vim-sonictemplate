@@ -1,12 +1,18 @@
 function! sonictemplate#lang#perl#guess()
   if expand('%:t') ==# 'Makefile.PL'
-    return ['perl', 'make']
+    return {
+    \ 'filter': 'make',
+    \}
   endif
   if expand('%:t:e') ==# 'pl'
-    return ['perl', 'script']
+    return {
+    \ 'filter': 'script',
+    \}
   endif
   if expand('%:t:e') ==# 'pm'
-    return ['perl', 'package']
+    return {
+    \ 'filter': 'package',
+    \}
   endif
   return []
 endfunction

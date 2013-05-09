@@ -55,31 +55,36 @@ endfunction
 function! s:get_candidate(fts, lead)
   let fts = a:fts
   let filter = ''
+  let prefix = search('[^ \t]', 'wn') ? 'snip' : 'base'
   try
     let cxt = sonictemplate#lang#{&ft!=""?&ft:"_"}#guess()
-    if len(cxt) == 2
-      let filter = cxt[1]
+    if has_key(cxt, 'prefix')
+      let prefix = cxt['prefix']
+      call s:setopt('prefix', cxt['prefix'])
     endif
-    if len(cxt) > 0
-      let fts = [cxt[0]]
-      call s:setopt('filetype', cxt[0])
+    if has_key(cxt, 'filter')
+      let filter = cxt['filter']
+    endif
+    if has_key(cxt, 'filetype')
+      let fts = [cxt['filetype']]
+      call s:setopt('filetype', cxt['filetype'])
     else
+      call s:setopt('prefix', '')
       call s:setopt('filetype', '')
     endif
   catch
   endtry
   let tmp = []
-  let prefix = search('[^ \t]', 'wn') ? 'snip-' : 'base-'
   for tmpldir in s:tmpldir
     for ft in fts
-      let tmp += map(split(globpath(join([tmpldir, ft], '/'), prefix . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+      let tmp += map(split(globpath(join([tmpldir, ft], '/'), prefix . '-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
       if len(tmp) > 0
         break
       endif
     endfor
   endfor
   for tmpldir in s:tmpldir
-    let tmp += map(split(globpath(join([tmpldir, '_'], '/'), prefix . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+    let tmp += map(split(globpath(join([tmpldir, '_'], '/'), prefix . '-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
   endfor
   let candidate = []
   for c in tmp
@@ -140,6 +145,10 @@ function! sonictemplate#apply(name, mode, ...) abort
   let name = matchstr(a:name, '\S\+')
   let buffer_is_not_empty = search('[^ \t]', 'wn')
   let fs = []
+  let prefix = s:getopt('prefix')
+  if prefix == ''
+    let prefix = search('[^ \t]', 'wn') ? 'snip' : 'base'
+  endif
   let ft = s:getopt('filetype')
   if ft == ''
     if get(a:000, 0, 0)
@@ -150,11 +159,10 @@ function! sonictemplate#apply(name, mode, ...) abort
   else
     let fts = [ft]
   endif
-  let prefix = search('[^ \t]', 'wn') ? 'snip-' : 'base-'
   for tmpldir in s:tmpldir
     for ft in fts
       if len(ft) > 0
-        let fs += split(globpath(join([tmpldir, ft], '/'), prefix . name . '.*'), "\n")
+        let fs += split(globpath(join([tmpldir, ft], '/'), prefix . '-' . name . '.*'), "\n")
       endif
     endfor
   endfor

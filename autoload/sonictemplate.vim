@@ -1,7 +1,7 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 08-May-2013.
+" Last Change: 09-May-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -53,10 +53,25 @@ function! sonictemplate#get_filetype()
 endfunction
 
 function! s:get_candidate(fts, lead)
+  let fts = a:fts
+  let filter = ''
+  try
+    let cxt = sonictemplate#lang#{&ft!=""?&ft:"_"}#guess()
+    if len(cxt) == 2
+      let filter = cxt[1]
+    endif
+    if len(cxt) > 0
+      let fts = [cxt[0]]
+      call s:setopt('filetype', cxt[0])
+    else
+      call s:setopt('filetype', '')
+    endif
+  catch
+  endtry
   let tmp = []
   let prefix = search('[^ \t]', 'wn') ? 'snip-' : 'base-'
   for tmpldir in s:tmpldir
-    for ft in a:fts
+    for ft in fts
       let tmp += map(split(globpath(join([tmpldir, ft], '/'), prefix . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
       if len(tmp) > 0
         break
@@ -72,12 +87,8 @@ function! s:get_candidate(fts, lead)
       call add(candidate, c)
     endif
   endfor
-  let filter = s:getopt('filter')
   if filter == ''
-    try
-      let filter = sonictemplate#lang#{&ft!=""?&ft:"_"}#guess()
-    catch
-    endtry
+    let filter = s:getopt('filter')
   endif
   if filter != ''
     let [lhs, rhs] = [[], []]
@@ -129,10 +140,15 @@ function! sonictemplate#apply(name, mode, ...) abort
   let name = matchstr(a:name, '\S\+')
   let buffer_is_not_empty = search('[^ \t]', 'wn')
   let fs = []
-  if get(a:000, 0, 0)
-    let fts = [sonictemplate#get_filetype(), &ft, '_']
+  let ft = s:getopt('filetype')
+  if ft == ''
+    if get(a:000, 0, 0)
+      let fts = [sonictemplate#get_filetype(), &ft, '_']
+    else
+      let fts = [&ft, sonictemplate#get_filetype(), '_']
+    endif
   else
-    let fts = [&ft, sonictemplate#get_filetype(), '_']
+    let fts = [ft]
   endif
   let prefix = search('[^ \t]', 'wn') ? 'snip-' : 'base-'
   for tmpldir in s:tmpldir
@@ -156,7 +172,7 @@ function! sonictemplate#apply(name, mode, ...) abort
   let c = substitute(c, '{{_name_}}', expand('%:t:r:'), 'g')
   let tmp = c
   let mx = '{{_input_:\(.\{-}\)}}'
-  if prefix == 'base-'
+  if !has_key(s:vars, ft)
     let s:vars[ft] = {}
   endif
   let vars = []
@@ -231,6 +247,9 @@ function! sonictemplate#apply(name, mode, ...) abort
         let c = substitute(c, "\t", repeat(' ', min([len(indent), &shiftwidth])), 'g')
       elseif &expandtab || &tabstop != &shiftwidth
         let c = substitute(c, "\t", repeat(' ', &shiftwidth), 'g')
+      endif
+      if line('.') < line('$')
+        silent! normal! dd
       endif
       silent! put! =c
     endif

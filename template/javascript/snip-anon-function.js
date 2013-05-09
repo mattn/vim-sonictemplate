@@ -1,3 +1,3 @@
 (function() {
 	{{_cursor_}}
-})
+})();

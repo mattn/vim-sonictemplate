@@ -17,6 +17,7 @@ Introduction           |sonictemplate-vim-introduction|
 Install                |sonictemplate-vim-install|
 Tutorial               |sonictemplate-vim-tutorial|
 Customize              |sonictemplate-vim-customize|
+Unite Source           |sonictemplate-vim-unitesource|
 Write Your Template    |sonictemplate-vim-writetemplate|
 
 ==============================================================================
@@ -131,6 +132,15 @@ default C language template 'main' is like following.
 This template is stored in 'sonictemplate-vim/template/c/base-main.c'.
 If you store base-main.c in another template directory that is specified
 |g:sonictemplate_vim_template_dir|, it will be overrided with your's one.
+
+==============================================================================
+UNITE SOURCE                                    *sonictemplate--vimunitesource*
+
+You can use unite source for sonictemplate. For example,
+>
+  :Unite sonictemplate
+<
+
 ==============================================================================
 WRITE YOUR TEMPLATE                           *sonictemplate-vim-writetemplate*
 

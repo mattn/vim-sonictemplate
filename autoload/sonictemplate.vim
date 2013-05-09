@@ -98,7 +98,8 @@ function! s:get_candidate(fts, lead)
   if filter != ''
     let [lhs, rhs] = [[], []]
     for c in candidate
-      if stridx(c, filter) == 0
+      let ms = matchstr(c, filter)
+      if ms != '' && matchstr(c, ms) == 0
         call add(lhs, c)
       else
         call add(rhs, c)

@@ -18,7 +18,7 @@ let s:source = {
 function! s:source.gather_candidates(args, context)"{{{
   call unite#print_message('[sonictemplate]')
   return s:uniq(map(
-\     sonictemplate#templates(), '{
+\     sonictemplate#complete("", "", 0), '{
 \     "word"   : s:to_template_name(v:val),
 \     "source" : s:source.name,
 \     "kind"   : s:source.name,

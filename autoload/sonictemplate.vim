@@ -1,7 +1,7 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 09-May-2013.
+" Last Change: 15-May-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -218,7 +218,7 @@ function! sonictemplate#apply(name, mode, ...) abort
   if len(c) == 0
     return
   endif
-  let mx = '{{_filter_:\(\w\+\)}}\s*'
+  let mx = '{{_filter_:\(\W\+\)}}\s*'
   let bf = matchstr(c, mx)
   if len(bf) > 0
     call s:setopt('filter', substitute(bf, mx, '\1', ''))

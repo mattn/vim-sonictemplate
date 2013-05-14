@@ -218,7 +218,7 @@ function! sonictemplate#apply(name, mode, ...) abort
   if len(c) == 0
     return
   endif
-  let mx = '{{_filter_:\(\W\+\)}}\s*'
+  let mx = '{{_filter_:\([a-zA-Z0-9_-]\+\)}}\s*'
   let bf = matchstr(c, mx)
   if len(bf) > 0
     call s:setopt('filter', substitute(bf, mx, '\1', ''))

@@ -1,7 +1,7 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 15-May-2013.
+" Last Change: 05-Jul-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -57,7 +57,8 @@ function! s:get_candidate(fts, lead)
   let filter = ''
   let prefix = search('[^ \t]', 'wn') ? 'snip' : 'base'
   try
-    let cxt = sonictemplate#lang#{&ft!=""?&ft:"_"}#guess()
+    let ft = s:get_filetype()
+    let cxt = sonictemplate#lang#{ft!=""?ft:"_"}#guess()
     if has_key(cxt, 'prefix')
       let prefix = cxt['prefix']
       call s:setopt('prefix', cxt['prefix'])
@@ -78,9 +79,6 @@ function! s:get_candidate(fts, lead)
   for tmpldir in s:tmpldir
     for ft in fts
       let tmp += map(split(globpath(join([tmpldir, ft], '/'), prefix . '-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
-      if len(tmp) > 0
-        break
-      endif
     endfor
   endfor
   for tmpldir in s:tmpldir
@@ -111,11 +109,11 @@ function! s:get_candidate(fts, lead)
 endfunction
  
 function! sonictemplate#complete(lead, cmdline, curpos) abort
-  return s:get_candidate([&ft, sonictemplate#get_filetype()], a:lead)
+  return s:get_candidate([&ft, s:get_filetype(), sonictemplate#get_filetype()], a:lead)
 endfunction
 
 function! sonictemplate#complete_intelligent(lead, cmdline, curpos) abort
-  return s:get_candidate([sonictemplate#get_filetype(), &ft], a:lead)
+  return s:get_candidate([sonictemplate#get_filetype(), &ft, s:get_filetype()], a:lead)
 endfunction
 
 function! s:setopt(k, v)
@@ -134,8 +132,13 @@ endfunction
 
 let s:vars = {}
 
+function! s:get_filetype()
+  return matchstr(&ft, '^\([^.]\)\+')
+endfunction
+
 function! sonictemplate#getvar(name)
-  let ft = &ft != "" ? &ft : "_"
+  let ft = s:get_filetype()
+  let ft = ft != "" ? ft : "_"
   if !has_key(s:vars, ft)
     return ''
   endif
@@ -153,9 +156,9 @@ function! sonictemplate#apply(name, mode, ...) abort
   let ft = s:getopt('filetype')
   if ft == ''
     if get(a:000, 0, 0)
-      let fts = [sonictemplate#get_filetype(), &ft, '_']
+      let fts = [sonictemplate#get_filetype(), &ft, s:get_filetype(), '_']
     else
-      let fts = [&ft, sonictemplate#get_filetype(), '_']
+      let fts = [&ft, s:get_filetype(), sonictemplate#get_filetype(), '_']
     endif
   else
     let fts = [ft]
@@ -176,7 +179,8 @@ function! sonictemplate#apply(name, mode, ...) abort
     echomsg 'Template '.name.' is not exists.'
     return
   endif
-  let ft = &ft != "" ? &ft : "_"
+  let ft = s:get_filetype()
+  let ft = ft != "" ? ft : "_"
   let c = join(readfile(f), "\n")
   let c = substitute(c, '{{_name_}}', expand('%:t:r:'), 'g')
   let tmp = c

@@ -14,7 +14,6 @@ function! sonictemplate#lang#html#guess()
   let content = join(lines, "\n")
   let tag = matchstr(content, '^<\zs[^> ]\+\ze.*')
   let inner = substitute(matchstr(content, '^<[^>]\+>\zs.*\ze</[^>]\+>$'), '[ \t\r\n]', '', 'g')
-  let g:hoge = inner
   if tag == 'script'
     return {
     \ 'filetype': 'javascript',

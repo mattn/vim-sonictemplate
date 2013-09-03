@@ -1,7 +1,7 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 05-Jul-2013.
+" Last Change: 03-Sep-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -78,11 +78,11 @@ function! s:get_candidate(fts, lead)
   let tmp = []
   for tmpldir in s:tmpldir
     for ft in fts
-      let tmp += map(split(globpath(join([tmpldir, ft], '/'), prefix . '-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+      let tmp += sort(map(split(globpath(join([tmpldir, ft], '/'), prefix . '-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'))
     endfor
   endfor
   for tmpldir in s:tmpldir
-    let tmp += map(split(globpath(join([tmpldir, '_'], '/'), prefix . '-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+    let tmp += sort(map(split(globpath(join([tmpldir, '_'], '/'), prefix . '-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'))
   endfor
   let candidate = []
   for c in tmp
@@ -166,7 +166,7 @@ function! sonictemplate#apply(name, mode, ...) abort
   for tmpldir in s:tmpldir
     for ft in fts
       if len(ft) > 0
-        let fs += split(globpath(join([tmpldir, ft], '/'), prefix . '-' . name . '.*'), "\n")
+        let fs += sort(split(globpath(join([tmpldir, ft], '/'), prefix . '-' . name . '.*'), "\n"))
       endif
     endfor
   endfor

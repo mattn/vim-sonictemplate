@@ -1,0 +1,14 @@
+apply {
+    plugin 'java'
+    plugin 'eclipse'
+    plugin 'idea'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile 'junit:junit:4.+'
+    {{_cursor_}}
+}

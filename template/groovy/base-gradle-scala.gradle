@@ -1,0 +1,25 @@
+apply {
+    plugin 'scala'
+    plugin 'eclipse'
+    plugin 'idea'
+}
+
+ext {
+    scalaVersion = '2.10'
+    specs2Version = '2.3.8'
+}
+
+repositories {
+    mavenCentral()
+}
+
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.useCompileDaemon = false
+    scalaCompileOptions.useAnt = false
+}
+
+dependencies {
+    compile "org.scala-lang:scala-library:$scalaVersion.+"
+    testCompile "org.specs2:specs2_$scalaVersion:$specs2Version"
+    {{_cursor_}}
+}

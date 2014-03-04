@@ -1,5 +1,3 @@
-# vim: fileencoding=utf-8
-
 def main():
 	{{_cursor_}}
 

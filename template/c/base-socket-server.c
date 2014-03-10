@@ -38,13 +38,11 @@ main(int argc, char* argv[]) {
 		perror("reader: bind");
 		exit(1);
 	}
-	printf("%d\n", reader_addr.sin_port);
 	size_t socklen = sizeof(reader_addr);
 	if (getsockname(server_fd, (struct sockaddr *)&reader_addr, &socklen) < 0) {
 		perror("reader: bind");
 		exit(1);
 	}
-	printf("%d\n", reader_addr.sin_port);
 
 	if (listen(server_fd, 5) < 0) {
 		perror("reader: listen");

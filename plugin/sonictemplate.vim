@@ -27,6 +27,8 @@ if get(g:, 'sonictemplate_key', '') == ''
   inoremap <plug>(sonictemplate) <c-r>=sonictemplate#select('i')<cr>
   nmap <unique> <c-y>t <plug>(sonictemplate)
   imap <unique> <c-y>t <plug>(sonictemplate)
+  nmap <unique> <c-y><c-t> <plug>(sonictemplate)
+  imap <unique> <c-y><c-t> <plug>(sonictemplate)
 else
   exe "nnoremap" g:sonictemplate_key ":call sonictemplate#select('n')<cr>"
   exe "inoremap" g:sonictemplate_key "<c-r>=sonictemplate#select('i')<cr>"

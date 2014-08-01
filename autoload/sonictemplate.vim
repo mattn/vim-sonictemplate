@@ -76,6 +76,11 @@ function! s:get_candidate(fts, lead)
   catch
   endtry
   let tmp = []
+  if prefix == 'base'
+    for tmpldir in s:tmpldir
+      let tmp += map(split(globpath(join([tmpldir, ft], '/'), 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+    endfor
+  endif
   for tmpldir in s:tmpldir
     for ft in fts
       let tmp += sort(map(split(globpath(join([tmpldir, ft], '/'), prefix . '-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'))
@@ -163,13 +168,22 @@ function! sonictemplate#apply(name, mode, ...) abort
   else
     let fts = [ft]
   endif
-  for tmpldir in s:tmpldir
-    for ft in fts
-      if len(ft) > 0
-        let fs += sort(split(globpath(join([tmpldir, ft], '/'), prefix . '-' . name . '.*'), "\n"))
-      endif
+  if prefix == 'base'
+    for tmpldir in s:tmpldir
+      for ft in fts
+        let fs += sort(split(globpath(join([tmpldir, ft], '/'), 'file-' . name . '.*'), "\n"))
+      endfor
     endfor
-  endfor
+  endif
+  if len(fs) == 0
+    for tmpldir in s:tmpldir
+      for ft in fts
+        if len(ft) > 0
+          let fs += sort(split(globpath(join([tmpldir, ft], '/'), prefix . '-' . name . '.*'), "\n"))
+        endif
+      endfor
+    endfor
+  endif
   if len(fs) == 0
     echomsg 'Template '.name.' is not exists.'
     return

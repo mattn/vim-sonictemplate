@@ -134,7 +134,7 @@ If you store base-main.c in another template directory that is specified
 |g:sonictemplate_vim_template_dir|, it will be overrided with your's one.
 
 ==============================================================================
-UNITE SOURCE                                    *sonictemplate--vimunitesource*
+UNITE SOURCE                                    *sonictemplate-vim-unitesource*
 
 You can use unite source for sonictemplate. For example,
 >
@@ -164,6 +164,8 @@ Note that I'm using pathogen-vim.
           base-script.pl                 ... base script
           snip-dbi-connect-sqlite.pl     ... snippet for DBI/SQLite
           ...
+        clojure                        ... filetype clojure
+          file-project-base.clj          ... file project base
         _                              ... global template
           base-foo.go                    ... base foo
           snip-foo.go                    ... snip foo
@@ -174,9 +176,12 @@ Note that I'm using pathogen-vim.
 
     |[kind]|-|[name]|.|[extension]|
 
-  |[kind]|  'base' or 'snip' should be used.
+  |[kind]|  'base' or 'snip' or 'file' should be used.
 
     'base' is used when buffer is empty.
+    'file' should be matched if buffer name is leading as template name.
+           For example, "initialize.c" should be expanded template files like
+             "file-initialize-qt.c" or "file-initialize-gtk.c".
 
   |[name]| template name
 

@@ -220,9 +220,17 @@ function! sonictemplate#apply(name, mode, ...) abort
     endif
     let tmp = tmp[stridx(tmp, match) + len(match):]
   endwhile
+  let gvars = has_key(g:, 'sonictemplate_vars') && type(g:sonictemplate_vars) == 4 ? g:sonictemplate_vars : {}
   for var in vars
-    if has_key(g:, 'sonictemplate_vars') && type(g:sonictemplate_vars) == 4 && has_key(g:sonictemplate_vars, var)
-      let val = g:sonictemplate_vars[var]
+    if exists('V')
+      unlet V
+    endif
+    if has_key(gvars, &ft) && type(gvars[&ft]) == 4 && has_key(gvars[&ft], var)
+      let V = gvars[&ft][var]
+      if type(V) == 1 | let val = V | else | let val = string(V) | endif
+    elseif has_key(gvars, '_') && type(gvars['_']) == 4 && has_key(gvars['_'], var)
+      let V = gvars['_'][var]
+      if type(V) == 1 | let val = V | else | let val = string(V) | endif
     else
       let val = input(var . ": ")
     endif

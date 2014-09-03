@@ -80,6 +80,9 @@ function! s:get_candidate(fts, lead)
     for tmpldir in s:tmpldir
       let tmp += map(split(globpath(join([tmpldir, ft], '/'), 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
     endfor
+    for tmpldir in s:tmpldir
+      let tmp += sort(map(split(globpath(join([tmpldir, '_'], '/'), 'file-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'))
+    endfor
   endif
   for tmpldir in s:tmpldir
     for ft in fts
@@ -173,6 +176,9 @@ function! sonictemplate#apply(name, mode, ...) abort
       for ft in fts
         let fs += sort(split(globpath(join([tmpldir, ft], '/'), 'file-' . name . '.*'), "\n"))
       endfor
+      for ft in fts
+        let fs += sort(split(globpath(join([tmpldir, '_'], '/'), 'file-' . name . '.*'), "\n"))
+      endfor
     endfor
   endif
   if len(fs) == 0
@@ -215,7 +221,11 @@ function! sonictemplate#apply(name, mode, ...) abort
     let tmp = tmp[stridx(tmp, match) + len(match):]
   endwhile
   for var in vars
-    let val = input(var . ":")
+    if has_key(g:, 'sonictemplate_vars') && type(g:sonictemplate_vars) == 4 && has_key(g:sonictemplate_vars, var)
+      let val = g:sonictemplate_vars[var]
+    else
+      let val = input(var . ": ")
+    endif
     let c = substitute(c, '\V{{\(_input_\|_var_\):'.var.'}}', '\=val', 'g')
     let s:vars[ft][var] = val
   endfor

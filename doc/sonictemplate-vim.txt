@@ -133,6 +133,20 @@ This template is stored in 'sonictemplate-vim/template/c/base-main.c'.
 If you store base-main.c in another template directory that is specified
 |g:sonictemplate_vim_template_dir|, it will be overrided with your's one.
 
+                                                *sonictemplate_vim_template_dir*
+Specify your template directory if you want.
+
+                                                       *sonictemplate_vim_vars*
+When template contains |{{_input_:var}}|, sonictemplate-vim ask you to input
+value. But in most of cases, it's always same value, maybe. For example, if
+you want to set 'author' in LICENSE-mit template as your name, set like below: >
+
+  let g:sonictemplate_vars = {
+  \ '_': {
+  \   'author': 'Yasuhiro Matsumoto',
+  \ },
+  \}
+<
 ==============================================================================
 UNITE SOURCE                                    *sonictemplate-vim-unitesource*
 

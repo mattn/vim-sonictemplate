@@ -81,7 +81,7 @@ function! s:get_candidate(fts, lead)
       let tmp += map(split(globpath(join([tmpldir, ft], '/'), 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
     endfor
     for tmpldir in s:tmpldir
-      let tmp += sort(map(split(globpath(join([tmpldir, '_'], '/'), 'file-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'))
+      let tmp += sort(map(split(globpath(join([tmpldir, '_'], '/'), 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'))
     endfor
   endif
   for tmpldir in s:tmpldir

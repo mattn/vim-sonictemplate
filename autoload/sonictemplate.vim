@@ -220,7 +220,7 @@ function! sonictemplate#apply(name, mode, ...) abort
     endif
     let tmp = tmp[stridx(tmp, match) + len(match):]
   endwhile
-  let gvars = has_key(g:, 'sonictemplate_vars') && type(g:sonictemplate_vars) == 4 ? g:sonictemplate_vars : {}
+  let gvars = has_key(g:, 'sonictemplate_vim_vars') && type(g:sonictemplate_vim_vars) == 4 ? g:sonictemplate_vim_vars : {}
   for var in vars
     if exists('V')
       unlet V

@@ -10,7 +10,7 @@ import (
 
 func main() {
 	goji.Get("/", func(c web.C, w http.ResponseWriter, r *http.Request) {
-		"{{_cursor_}}"
+		{{_cursor_}}
 	})
 	goji.Serve()
 }

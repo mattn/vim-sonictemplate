@@ -10,4 +10,4 @@ func main() {
 	})
 	web.Run(":8080")
 }
-{{_filter_:webgo}}
+{{_filter_:web-webgo}}

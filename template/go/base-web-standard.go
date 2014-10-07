@@ -11,4 +11,4 @@ func main() {
 	})
     http.ListenAndServe(":8080", nil)
 }
-{{_filter_:web-app}}
+{{_filter_:web-standard}}

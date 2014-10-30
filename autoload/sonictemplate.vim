@@ -247,7 +247,7 @@ function! sonictemplate#apply(name, mode, ...) abort
     endif
     let var = substitute(match, mx, '\1', 'ig')
     let val = eval(substitute(match, mx, '\2', 'ig'))
-    let c = substitute(c, mx, '', 'g')
+    let c = substitute(c, '{{_define_:' . var . ':\(.\{-}\)}}\s*', '', 'g')
     let c = substitute(c, '\V{{_var_:'.var.'}}', '\=val', 'g')
     let s:vars[ft][var] = val
   endwhile

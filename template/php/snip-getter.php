@@ -1,7 +1,8 @@
 /**
- * get {{_input_:name}}
- * @return {{_var_:name}}
+ * Get {{_input_:property}}
+ *
+ * @return {{_input_:type}}
  */
-public {{_input_:type}} get{{_expr_:substitute('{{_var_:name}}', '\w\+', '\u\0', '')}}() {
-	return {{_var_:name}};
+public function get{{_expr_:substitute('{{_var_:property}}', '\w\+', '\u\0', '')}}() {
+	return $this->{{_var_:property}};
 }

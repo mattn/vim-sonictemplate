@@ -1,15 +1,17 @@
 /**
- * get {{_input_:name}}
- * @return {{_var_:name}}
+ * Get {{_input_:property}}
+ *
+ * @return {{_input_:type}}
  */
-public {{_var_:name}} get{{_expr_:substitute('{{_var_:name}}', '\w\+', '\u\0', '')}}() {
-	return {{_var_:name}};
+public function get{{_expr_:substitute('{{_var_:property}}', '\w\+', '\u\0', '')}}() {
+	return $this->{{_var_:property}};
 }
 
 /**
- * set {{_var_:name}}
- * @param {{_var_:name}}
+ * Set {{_var_:property}}
+ *
+ * @param {{_var_:type}} {{_var_:property}}
  */
-public void set{{_expr_:substitute('{{_var_:name}}', '\w\+', '\u\0', '')}}({{_var_:name}} {{_var_:name}}) {
-	this.{{_var_:name}} = {{_var_:name}};
+public function set{{_expr_:substitute('{{_var_:property}}', '\w\+', '\u\0', '')}}(${{_var_:property}}) {
+	$this->{{_var_:property}} = ${{_var_:property}};
 }

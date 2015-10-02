@@ -1,3 +1,5 @@
+{{_lang_util_:package}}
+
 import static org.junit.Assert.*;
 
 import org.junit.Test;

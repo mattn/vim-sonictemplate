@@ -1,3 +1,5 @@
+{{_lang_util_:package}}
+
 /**
  * {{_name_}}
  */

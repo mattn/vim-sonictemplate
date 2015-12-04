@@ -10,6 +10,8 @@ ifeq ($(OS),Windows_NT)
 TARGET := $(TARGET).exe
 endif
 
+.SUFFIXES: .cpp .cxx .o
+
 all : $(TARGET)
 
 $(TARGET) : $(OBJS)

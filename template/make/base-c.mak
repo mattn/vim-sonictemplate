@@ -5,7 +5,10 @@ OBJS = $(subst .c,.o,$(SRCS))
 
 CFLAGS = 
 LIBS = 
-TARGET = {{_expr_:expand('%:p:h:t') . (has('win32')||has('win64')?'.exe':'')}}
+TARGET = {{_expr_:expand('%:p:h:t')}}
+ifeq ($(OS),Windows_NT)
+TARGET := $(TARGET).exe
+endif
 
 all : $(TARGET)
 

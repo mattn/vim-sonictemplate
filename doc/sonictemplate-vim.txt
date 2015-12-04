@@ -141,7 +141,7 @@ When template contains |{{_input_:var}}|, sonictemplate-vim ask you to input
 value. But in most of cases, it's always same value, maybe. For example, if
 you want to set 'author' in LICENSE-mit template as your name, set like below: >
 
-  let g:sonictemplate_vars = {
+  let g:sonictemplate_vim_vars = {
   \ '_': {
   \   'author': 'Yasuhiro Matsumoto',
   \ },

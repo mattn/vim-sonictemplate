@@ -266,7 +266,7 @@ function! sonictemplate#apply(name, mode, ...) abort
 
   if !buffer_is_not_empty
     let c = substitute(c, '{{_inline_}}\s*', '', 'g')
-    if &expandtab || &tabstop != &shiftwidth
+    if &expandtab || (&shiftwidth && &tabstop != &shiftwidth)
       let c = substitute(c, "\t", repeat(' ', &shiftwidth), 'g')
     endif
     silent! %d _
@@ -291,9 +291,9 @@ function! sonictemplate#apply(name, mode, ...) abort
         let c = lhs . c . rhs
       endif
       let c = indent . substitute(substitute(c, "\n", "\n".indent, 'g'), "\n".indent."\n", "\n\n", 'g')
-      if len(indent) && (&expandtab || &tabstop != &shiftwidth || indent =~ '^ \+$')
+      if len(indent) && (&expandtab || (&shiftwidth && &tabstop != &shiftwidth) || indent =~ '^ \+$')
         let c = substitute(c, "\t", repeat(' ', min([len(indent), &shiftwidth])), 'g')
-      elseif &expandtab || &tabstop != &shiftwidth
+      elseif &expandtab || (&shiftwidth && &tabstop != &shiftwidth)
         let c = substitute(c, "\t", repeat(' ', &shiftwidth), 'g')
       endif
       if line('.') < line('$')

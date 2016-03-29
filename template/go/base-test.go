@@ -1,4 +1,4 @@
-package {{_name_}}_test
+package {{_expr_:substitute('{{_name_}}', '_test', '', '')}}_test
 
 import (
 	"testing"

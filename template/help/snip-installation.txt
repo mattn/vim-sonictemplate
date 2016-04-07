@@ -1,0 +1,26 @@
+==============================================================================
+INSTALLATION{{_expr_:repeat(' ',77-12*2-strdisplaywidth(expand("%:p:t:r")))}}*{{_expr_:expand("%:p:t:r")}}-installation*
+{{_cursor_}}
+Manual installation:
+  Copy the files to your .vim directory (_vimfiles on Windows).
+
+Pathogen: >
+ cd ~/.vim/bundle && git clone git://github.com/XXX/vim-{{_expr_:expand("%:p:t:r")}}.git
+
+Vundle: add below to .vimrc
+>
+ Plugin 'XXX/vim-{{_expr_:expand("%:p:t:r")}}'
+<
+ Run :PluginInstall
+
+NeoBundle: add below to .vimrc
+>
+ NeoBundle 'XXX/vim-{{_expr_:expand("%:p:t:r")}}'
+<
+ Run :NeoBundleInstall
+
+vim-plug: add below to .vimrc
+>
+ Plug 'XXX/vim-{{_expr_:expand("%:p:t:r")}}' to .vimrc
+<
+ Run :PlugInstall

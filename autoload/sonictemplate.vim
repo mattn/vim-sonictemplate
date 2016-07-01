@@ -117,7 +117,7 @@ function! s:get_candidate(fts, lead)
   endif
   return candidate
 endfunction
- 
+
 function! sonictemplate#complete(lead, cmdline, curpos) abort
   return s:get_candidate([&ft, s:get_filetype(), sonictemplate#get_filetype()], a:lead)
 endfunction
@@ -313,6 +313,72 @@ function! sonictemplate#apply(name, mode, ...) abort
       silent! call feedkeys(repeat("\<bs>", 12))
     endif
   endif
+endfunction
+
+let s:pat = {}
+
+function! sonictemplate#pattern()
+  if !has_key(s:pat, &ft)
+    return ''
+  endif
+  let line = getline('.')[:col('.')]
+  for k in keys(s:pat[&ft])
+    let m = matchstr(line, k)
+    if len(m) > 0
+      let ml = matchlist(line, k)
+      let line = line[:-len(m)-1]
+      let c = join(s:pat[&ft][k], "\n")
+      for i in range(1, 9)
+        let c = substitute(c, '{{$' . i . '}}', ml[i], 'g')
+      endfor
+      if line !~ '^\s*$'
+        let indent = matchstr(line, '^\(\s*\)')
+        let lhs = col('.') > 1 ? line[:col('.')-2] : ''
+        let rhs = line[len(lhs):]
+        let lhs = lhs[len(indent):]
+        let c = lhs . c . rhs
+      endif
+      let c = join(split(c, "\n"), "")
+      call setline('.', line)
+      silent! exe "normal! a\<c-r>=c\<cr>"
+      if stridx(c, '{{_cursor_}}') != -1
+        silent! call search('{{_cursor_}}\zs', 'w')
+        silent! foldopen
+        silent! call feedkeys(repeat("\<bs>", 12))
+      endif
+      break
+    endif
+  endfor
+  return ''
+endfunction
+
+function! sonictemplate#load_pattern()
+  let ft = &ft
+  let tmp = []
+  for tmpldir in s:tmpldir
+    let tmp += split(globpath(join([tmpldir, ft], '/'), 'pattern.tpl'), "\n")
+  endfor
+  if len(tmp) == 0
+    return
+  endif
+  let s:pat[ft] = {}
+  for f in tmp
+    let k = ''
+    let l = []
+    for line in add(readfile(f), '__END__')
+      if line == ''
+        continue
+      elseif line !~ '^\t'
+        if k != ''
+          let s:pat[ft][k] = l
+        endif
+        let k = line
+        let l = []
+      else
+        call add(l, line[1:])
+      endif
+    endfor
+  endfor
 endfunction
 
 let &cpo = s:save_cpo

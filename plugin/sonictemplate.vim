@@ -43,6 +43,15 @@ else
   exe "inoremap" g:sonictemplate_intelligent_key "<c-r>=sonictemplate#select_intelligent('i')<cr>"
 endif
 
+" TODO fix better name
+if get(g:, 'sonictemplate_enable_pattern', 0) == 0
+  augroup sonictemplate
+    au! filetype * silent! call sonictemplate#load_pattern()
+  augroup END
+  inoremap <plug>(sonictemplate-pattern) <c-r>=sonictemplate#pattern()<cr>
+  imap <unique> <c-y><c-b> <plug>(sonictemplate-pattern)
+endif
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

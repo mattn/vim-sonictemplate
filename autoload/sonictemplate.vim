@@ -331,8 +331,13 @@ function! sonictemplate#pattern()
       for i in range(1, 9)
         let c = substitute(c, '{{$' . i . '}}', ml[i], 'g')
       endfor
+      let indent = matchstr(line, '^\(\s*\)')
+      if len(indent) && (&expandtab || (&shiftwidth && &tabstop != &shiftwidth) || indent =~ '^ \+$')
+        let c = substitute(c, "\t", repeat(' ', min([len(indent), &shiftwidth])), 'g')
+      elseif &expandtab || (&shiftwidth && &tabstop != &shiftwidth)
+        let c = substitute(c, "\t", repeat(' ', &shiftwidth), 'g')
+      endif
       if line !~ '^\s*$'
-        let indent = matchstr(line, '^\(\s*\)')
         let lhs = col('.') > 1 ? line[:col('.')-2] : ''
         let rhs = line[len(lhs):]
         let lhs = lhs[len(indent):]

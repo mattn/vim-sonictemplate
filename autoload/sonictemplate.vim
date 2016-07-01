@@ -360,7 +360,7 @@ function! sonictemplate#load_pattern()
   let ft = &ft
   let tmp = []
   for tmpldir in s:tmpldir
-    let tmp += split(globpath(join([tmpldir, ft], '/'), 'pattern.tpl'), "\n")
+    let tmp += split(globpath(join([tmpldir, ft], '/'), 'pattern.stpl'), "\n")
   endfor
   if len(tmp) == 0
     return

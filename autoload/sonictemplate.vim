@@ -338,7 +338,6 @@ function! sonictemplate#pattern()
         let lhs = lhs[len(indent):]
         let c = lhs . c . rhs
       endif
-      let c = join(split(c, "\n"), "")
       call setline('.', line)
       silent! exe "normal! a\<c-r>=c\<cr>"
       if stridx(c, '{{_cursor_}}') != -1

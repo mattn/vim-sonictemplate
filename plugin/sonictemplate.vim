@@ -44,7 +44,7 @@ else
 endif
 
 " TODO fix better name
-if get(g:, 'sonictemplate_enable_pattern', 0) == 0
+if get(g:, 'sonictemplate_enable_pattern', 0) != 0
   augroup sonictemplate
     au! filetype * silent! call sonictemplate#load_pattern()
   augroup END

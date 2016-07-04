@@ -279,7 +279,10 @@ function! sonictemplate#apply(name, mode, ...) abort
     if stridx(c, '{{_inline_}}') != -1
       let c = substitute(c, '{{_inline_}}', '', 'g')
       let c = join(split(c, "\n"), "")
+      let oldindentexpr = &indentexpr
+      let &indentexpr = ''
       silent! exe "normal! a\<c-r>=c\<cr>"
+      let &indentexpr = oldindentexpr
       return
     else
       let line = getline('.')

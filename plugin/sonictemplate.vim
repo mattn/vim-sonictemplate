@@ -22,34 +22,34 @@ set cpo&vim
 
 exe "command!" "-nargs=1" "-complete=customlist,sonictemplate#complete" get(g:, 'sonictemplate_commandname', 'Template') "call sonictemplate#apply(<f-args>, 'n')"
 
+nnoremap <plug>(sonictemplate) :call sonictemplate#select('n')<cr>
+inoremap <plug>(sonictemplate) <c-r>=sonictemplate#select('i')<cr>
+
 if get(g:, 'sonictemplate_key', '') == ''
-  nnoremap <plug>(sonictemplate) :call sonictemplate#select('n')<cr>
-  inoremap <plug>(sonictemplate) <c-r>=sonictemplate#select('i')<cr>
   nmap <unique> <c-y>t <plug>(sonictemplate)
   imap <unique> <c-y>t <plug>(sonictemplate)
   nmap <unique> <c-y><c-t> <plug>(sonictemplate)
   imap <unique> <c-y><c-t> <plug>(sonictemplate)
 else
-  exe "nnoremap" g:sonictemplate_key ":call sonictemplate#select('n')<cr>"
-  exe "inoremap" g:sonictemplate_key "<c-r>=sonictemplate#select('i')<cr>"
+  exe "nnoremap" g:sonictemplate_key "<plug>(sonictemplate)"
+  exe "inoremap" g:sonictemplate_key "<plug>(sonictemplate)"
 endif
+
+nnoremap <plug>(sonictemplate-intelligent) :call sonictemplate#select_intelligent('n')<cr>
+inoremap <plug>(sonictemplate-intelligent) <c-r>=sonictemplate#select_intelligent('i')<cr>
 if get(g:, 'sonictemplate_intelligent_key', '') == ''
-  nnoremap <plug>(sonictemplate-intelligent) :call sonictemplate#select_intelligent('n')<cr>
-  inoremap <plug>(sonictemplate-intelligent) <c-r>=sonictemplate#select_intelligent('i')<cr>
   nmap <unique> <c-y>T <plug>(sonictemplate-intelligent)
   imap <unique> <c-y>T <plug>(sonictemplate-intelligent)
 else
-  exe "nnoremap" g:sonictemplate_intelligent_key ":call sonictemplate#select_intelligent('n')<cr>"
-  exe "inoremap" g:sonictemplate_intelligent_key "<c-r>=sonictemplate#select_intelligent('i')<cr>"
+  exe "nnoremap" g:sonictemplate_intelligent_key "<plug>(sonictemplate-intelligent)"
+  exe "inoremap" g:sonictemplate_intelligent_key "<plug>(sonictemplate-intelligent)"
 endif
 
-" TODO fix better name
-if get(g:, 'sonictemplate_enable_pattern', 0) != 0
-  augroup sonictemplate
-    au! filetype * silent! call sonictemplate#load_pattern()
-  augroup END
-  inoremap <plug>(sonictemplate-pattern) <c-r>=sonictemplate#pattern()<cr>
-  imap <unique> <c-y><c-b> <plug>(sonictemplate-pattern)
+inoremap <plug>(sonictemplate-postfix) <c-r>=sonictemplate#postfix()<cr>
+if get(g:, 'sonictemplate_postfix_key', '') == ''
+  imap <unique> <c-y><c-b> <plug>(sonictemplate-postfix)
+else
+  exe "inoremap" g:sonictemplate_postfix_key "<plug>(sonictemplate-postfix)"
 endif
 
 let &cpo = s:save_cpo

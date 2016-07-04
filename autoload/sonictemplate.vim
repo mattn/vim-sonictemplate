@@ -317,7 +317,8 @@ endfunction
 
 let s:pat = {}
 
-function! sonictemplate#pattern()
+function! sonictemplate#postfix()
+  call sonictemplate#load_postfix()
   if !has_key(s:pat, &ft)
     return ''
   endif
@@ -356,8 +357,11 @@ function! sonictemplate#pattern()
   return ''
 endfunction
 
-function! sonictemplate#load_pattern()
+function! sonictemplate#load_postfix()
   let ft = &ft
+  if has_key(s:pat, ft)
+    return
+  endif
   let tmp = []
   for tmpldir in s:tmpldir
     let tmp += split(globpath(join([tmpldir, ft], '/'), 'pattern.stpl'), "\n")

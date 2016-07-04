@@ -333,19 +333,28 @@ function! sonictemplate#postfix()
         let c = substitute(c, '{{$' . i . '}}', ml[i], 'g')
       endfor
       let indent = matchstr(line, '^\(\s*\)')
-      if len(indent) && (&expandtab || (&shiftwidth && &tabstop != &shiftwidth) || indent =~ '^ \+$')
-        let c = substitute(c, "\t", repeat(' ', min([len(indent), &shiftwidth])), 'g')
-      elseif &expandtab || (&shiftwidth && &tabstop != &shiftwidth)
-        let c = substitute(c, "\t", repeat(' ', &shiftwidth), 'g')
-      endif
       if line !~ '^\s*$'
         let lhs = col('.') > 1 ? line[:col('.')-2] : ''
         let rhs = line[len(lhs):]
         let lhs = lhs[len(indent):]
         let c = lhs . c . rhs
       endif
-      call setline('.', line)
-      silent! exe "normal! a\<c-r>=c\<cr>"
+      if c =~ "\n"
+        let c = indent . substitute(substitute(c, "\n", "\n".indent, 'g'), "\n".indent."\n", "\n\n", 'g')
+        if len(indent) && (&expandtab || (&shiftwidth && &tabstop != &shiftwidth) || indent =~ '^ \+$')
+          let c = substitute(c, "\t", repeat(' ', min([len(indent), &shiftwidth])), 'g')
+        elseif &expandtab || (&shiftwidth && &tabstop != &shiftwidth)
+          let c = substitute(c, "\t", repeat(' ', &shiftwidth), 'g')
+        endif
+        call setline('.', line)
+        if line('.') < line('$')
+          silent! normal! dd
+        endif
+        silent! put! =c
+      else
+        call setline('.', line)
+        silent! exe "normal! a\<c-r>=c\<cr>"
+      endif
       if stridx(c, '{{_cursor_}}') != -1
         silent! call search('{{_cursor_}}\zs', 'w')
         silent! foldopen

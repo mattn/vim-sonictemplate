@@ -353,7 +353,10 @@ function! sonictemplate#postfix()
         silent! put! =c
       else
         call setline('.', line)
+        let oldindentexpr = &indentexpr
+        let &indentexpr = ''
         silent! exe "normal! a\<c-r>=c\<cr>"
+        let &indentexpr = oldindentexpr
       endif
       if stridx(c, '{{_cursor_}}') != -1
         silent! call search('{{_cursor_}}\zs', 'w')

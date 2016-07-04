@@ -3,6 +3,10 @@ sonictemplete-vim
 
 Easy and high speed coding method.
 
+![](https://raw.githubusercontent.com/mattn/sonictemplate-vim/master/screenshot1.gif)
+
+![](https://raw.githubusercontent.com/mattn/sonictemplate-vim/master/screenshot2.gif)
+
 Usage:
 ------
 

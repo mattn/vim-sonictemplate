@@ -1,14 +1,16 @@
-sonictemplete-vim
-=================
+# sonictemplete-vim
 
 Easy and high speed coding method.
 
+## Template Completion
+
 ![](https://raw.githubusercontent.com/mattn/sonictemplate-vim/master/screenshot1.gif)
+
+## Postfix Completion
 
 ![](https://raw.githubusercontent.com/mattn/sonictemplate-vim/master/screenshot2.gif)
 
-Usage:
-------
+## Basic Usage
 
 Open new file
 
@@ -53,8 +55,11 @@ _
 
 If you open C++ file, you can select `main` for C.
 
-Author:
--------
+## License
+
+MIT
+
+## Author
 
 Yasuhiro Matsumoto `<mattn.jp@gmail.com>`
 

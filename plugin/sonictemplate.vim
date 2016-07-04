@@ -31,8 +31,8 @@ if get(g:, 'sonictemplate_key', '') == ''
   nmap <unique> <c-y><c-t> <plug>(sonictemplate)
   imap <unique> <c-y><c-t> <plug>(sonictemplate)
 else
-  exe "nnoremap" g:sonictemplate_key "<plug>(sonictemplate)"
-  exe "inoremap" g:sonictemplate_key "<plug>(sonictemplate)"
+  exe "nmap" g:sonictemplate_key "<plug>(sonictemplate)"
+  exe "imap" g:sonictemplate_key "<plug>(sonictemplate)"
 endif
 
 nnoremap <plug>(sonictemplate-intelligent) :call sonictemplate#select_intelligent('n')<cr>
@@ -41,15 +41,15 @@ if get(g:, 'sonictemplate_intelligent_key', '') == ''
   nmap <unique> <c-y>T <plug>(sonictemplate-intelligent)
   imap <unique> <c-y>T <plug>(sonictemplate-intelligent)
 else
-  exe "nnoremap" g:sonictemplate_intelligent_key "<plug>(sonictemplate-intelligent)"
-  exe "inoremap" g:sonictemplate_intelligent_key "<plug>(sonictemplate-intelligent)"
+  exe "nmap" g:sonictemplate_intelligent_key "<plug>(sonictemplate-intelligent)"
+  exe "imap" g:sonictemplate_intelligent_key "<plug>(sonictemplate-intelligent)"
 endif
 
 inoremap <plug>(sonictemplate-postfix) <c-r>=sonictemplate#postfix()<cr>
 if get(g:, 'sonictemplate_postfix_key', '') == ''
   imap <unique> <c-y><c-b> <plug>(sonictemplate-postfix)
 else
-  exe "inoremap" g:sonictemplate_postfix_key "<plug>(sonictemplate-postfix)"
+  exe "imap" g:sonictemplate_postfix_key "<plug>(sonictemplate-postfix)"
 endif
 
 let &cpo = s:save_cpo

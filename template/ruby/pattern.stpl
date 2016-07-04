@@ -1,0 +1,31 @@
+^\s*\zs\(\S.*\)\.each$
+	{{$1}}.each do |x|
+		{{_cursor_}}
+	end
+
+^\s*\zs\(\S.*\)\.eachb$
+	{{$1}}.each {|x|
+		{{_cursor_}}
+	}
+
+^\s*\zs\(\S.*\)\.eachi$
+	{{$1}}.each_with_index do |x,i|
+		{{_cursor_}}
+	end
+
+^\s*\zs\(\S.*\)\.eachbi$
+	{{$1}}.each_with_index {|x,i|
+		{{_cursor_}}
+	}
+
+^\s*\zs\(\S.*\)\.map$
+	{{$1}}.map do |x|
+		{{_cursor_}}
+	end
+
+^\s*\zs\(\S.*\)\.mapb$
+	{{$1}}.map {|x|
+		{{_cursor_}}
+	}
+
+

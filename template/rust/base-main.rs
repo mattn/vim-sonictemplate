@@ -1,5 +1,3 @@
-use std;
-
-fn main(args:[str]) {
+fn main() {
 	{{_cursor_}}
 }

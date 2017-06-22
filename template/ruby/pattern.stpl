@@ -28,4 +28,8 @@
 		{{_cursor_}}
 	}
 
+^\s*\zs\(\S.*\)\.p$
+	p {{$1}}{{_cursor_}}
 
+^\s*\zs\(\S.*\)\.puts$
+	puts {{$1}}{{_cursor_}}

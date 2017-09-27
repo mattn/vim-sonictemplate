@@ -1,0 +1,5 @@
+cc_binary(
+  name = {{_expr_:json_encode(expand('%:p:h:t'))}}
+  deps = ["@com_google_absl//absl/strings"],
+  srcs = {{_expr_:json_encode(glob('*.cc',0,1)+glob('*.cxx',0,1))}}
+)

@@ -3,13 +3,13 @@
 
 \(\S\+\)\.iferr$
 	if {{$1}} != nil {
-		return err
+		return {{$1}}
 	}
 	{{_cursor_}}
 
 \(\S\+\)\.fatal$
 	if {{$1}} != nil {
-		log.Fatal(err)
+		log.Fatal({{$1}})
 	}
 	{{_cursor_}}
 

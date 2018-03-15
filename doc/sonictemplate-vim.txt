@@ -113,7 +113,7 @@ Sonictemplate provide postfix-completion. For example: >
 
   name.var_
 <
-Typing "<c-y><c-y>" expand to: >
+Typing "<c-y><c-b>" expand to: >
 
   var name = _;
 <

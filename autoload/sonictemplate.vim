@@ -21,8 +21,7 @@ function! sonictemplate#select(mode) abort
   if name == ''
     return ''
   endif
-  call sonictemplate#apply(name, a:mode, 0)
-  return ''
+  return sonictemplate#apply(name, a:mode, 0)
 endfunction
 
 function! sonictemplate#select_intelligent(mode) abort
@@ -30,8 +29,7 @@ function! sonictemplate#select_intelligent(mode) abort
   if name == ''
     return ''
   endif
-  call sonictemplate#apply(name, a:mode, 1)
-  return ''
+  return sonictemplate#apply(name, a:mode, 1)
 endfunction
 
 function! sonictemplate#get_filetype()
@@ -194,12 +192,12 @@ function! sonictemplate#apply(name, mode, ...) abort
   endif
   if len(fs) == 0
     echomsg 'Template '.name.' is not exists.'
-    return
+    return ''
   endif
   let f = fs[0]
   if !filereadable(f)
     echomsg 'Template '.name.' is not exists.'
-    return
+    return ''
   endif
   let ft = s:get_filetype()
   let ft = ft != "" ? ft : "_"
@@ -255,7 +253,7 @@ function! sonictemplate#apply(name, mode, ...) abort
   sandbox let c = substitute(c, '{{_expr_:\(.\{-}\)}}', '\=eval(submatch(1))', 'g')
   silent! let c = substitute(c, '{{_lang_util_:\(.\{-}\)}}', '\=sonictemplate#lang#{ft}#util(submatch(1))', 'g')
   if len(c) == 0
-    return
+    return ''
   endif
   let mx = '{{_filter_:\([a-zA-Z0-9_-]\+\)}}\s*'
   let bf = matchstr(c, mx)
@@ -264,11 +262,18 @@ function! sonictemplate#apply(name, mode, ...) abort
     let c = substitute(c, mx, '', 'g')
   endif
 
+  let s:placeholder = {}
   if !buffer_is_not_empty
     let c = substitute(c, '{{_inline_}}\s*', '', 'g')
     if &expandtab || (&shiftwidth && &tabstop != &shiftwidth)
       let c = substitute(c, "\t", repeat(' ', &shiftwidth), 'g')
     endif
+    let s:placeholder = {
+    \  'n': 0,
+    \  'pos': getpos('.'),
+    \  'token': split(substitute(c, '{{_cursor_}}', '', 'g'), '{{_([^)]*)_}}', 1),
+    \}
+    let c = substitute(c, '{{_(\([^)]*\))_}}', '\1', 'g')
     silent! %d _
     silent! put = c
     silent! normal! ggdd
@@ -283,7 +288,7 @@ function! sonictemplate#apply(name, mode, ...) abort
       let &indentexpr = ''
       silent! exe "normal! a\<c-r>=c\<cr>"
       let &indentexpr = oldindentexpr
-      return
+      return ''
     else
       let line = getline('.')
       let indent = matchstr(line, '^\(\s*\)')
@@ -302,9 +307,16 @@ function! sonictemplate#apply(name, mode, ...) abort
       if line('.') < line('$')
         silent! normal! dd
       endif
+      let s:placeholder = {
+      \  'n': 0,
+      \  'pos': getpos('.'),
+      \  'token': split(substitute(c, '{{_cursor_}}', '', 'g'), '{{_([^)]*)_}}', 1),
+      \}
+      let c = substitute(c, '{{_(\([^)]*\))_}}', '\1', 'g')
       silent! put! =c
     endif
   endif
+
   if stridx(c, '{{_cursor_}}') != -1
     if a:mode == 'n'
       silent! call search('\zs{{_cursor_}}', 'w')
@@ -315,7 +327,97 @@ function! sonictemplate#apply(name, mode, ...) abort
       silent! foldopen
       silent! call feedkeys(repeat("\<bs>", 12))
     endif
+  elseif !empty(s:placeholder)
+    let pos = s:placeholder.pos
+    let pos[2] = len(s:placeholder.token[s:placeholder.n]) + 1
+    call setpos('.', pos)
+    let s:placeholder.pos = getpos('.')
+    let newpos = searchpos(s:escape(s:placeholder.token[s:placeholder.n+1]), 'cn')
+    if a:mode == 'i'
+      call feedkeys("\<c-o>v".(newpos[1]-pos[2]-1)."l\<c-g>")
+    else
+      exe "normal!" "v".(newpos[1]-pos[2]-1)."l\<c-g>"
+    endif
+    snoremap <plug>(sonictemplate-jump-prev) <esc>:call sonictemplate#jump_prev()<cr>
+    snoremap <plug>(sonictemplate-jump-next) <esc>:call sonictemplate#jump_next()<cr>
+    inoremap <plug>(sonictemplate-jump-prev) <c-r>=sonictemplate#jump_prev()<cr>
+    inoremap <plug>(sonictemplate-jump-next) <c-r>=sonictemplate#jump_next()<cr>
+    smap <c-p> <plug>(sonictemplate-jump-prev)
+    smap <c-n> <plug>(sonictemplate-jump-next)
+    imap <c-p> <plug>(sonictemplate-jump-prev)
+    imap <c-n> <plug>(sonictemplate-jump-next)
   endif
+  return ''
+endfunction
+
+function! s:escape(s) abort
+  return substitute(escape(a:s, '\'), '\n', '\\n', 'g')
+endfunction
+
+function! sonictemplate#jump_prev()
+  if s:placeholder.n == 0
+    return ''
+  endif
+  let n = s:placeholder.n - 1
+  let pos = getpos('.')
+  let nextpos = searchpos(s:escape(s:placeholder.token[n]).'\zs', 'bn')
+  if nextpos != [0, 0]
+    let pos[1] = nextpos[0]
+    let pos[2] = nextpos[1]
+    call setpos('.', pos)
+    let s:placeholder.pos = pos
+    if n+1 < len(s:placeholder.token)
+      let newpos = searchpos(s:escape(s:placeholder.token[n+1]), 'cn')
+      let s:placeholder.n = n
+      if newpos != [0, 0] && newpos[1] > pos[2]
+        if mode() =~ 'i'
+          call feedkeys("\<c-o>v".(newpos[1]-pos[2]-1)."l\<c-g>")
+        else
+          exe "normal!" "v".(newpos[1]-pos[2]-1)."l\<c-g>"
+        endif
+      endif
+      return ''
+    endif
+  endif
+  if col('.') == col('$') - 1
+    startinsert!
+  else
+    call feedkeys("v\<c-g>")
+  endif
+  return ''
+endfunction
+
+function! sonictemplate#jump_next()
+  if s:placeholder.n+2 >= len(s:placeholder.token)
+    return ''
+  endif
+  let n = s:placeholder.n + 1
+  let pos = getpos('.')
+  let nextpos = searchpos(s:escape(s:placeholder.token[n]).'\zs', 'cn')
+  if nextpos != [0, 0]
+    let pos[1] = nextpos[0]
+    let pos[2] = nextpos[1]
+    call setpos('.', pos)
+    let s:placeholder.pos = pos
+    if n+1 < len(s:placeholder.token)
+      let newpos = searchpos(s:escape(s:placeholder.token[n+1]), 'cn')
+      let s:placeholder.n = n
+      if newpos != [0, 0] && newpos[1] > pos[2]
+        if mode() =~ 'i'
+          call feedkeys("\<c-o>v".(newpos[1]-pos[2]-1)."l\<c-g>")
+        else
+          exe "normal!" "v".(newpos[1]-pos[2]-1)."l\<c-g>"
+        endif
+        return ''
+      endif
+    endif
+  endif
+  if col('.') == col('$') - 1
+    startinsert!
+  else
+    call feedkeys("v\<c-g>")
+  endif
+  return ''
 endfunction
 
 let s:pat = {}

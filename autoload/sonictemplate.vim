@@ -327,7 +327,7 @@ function! sonictemplate#apply(name, mode, ...) abort
       silent! foldopen
       silent! call feedkeys(repeat("\<bs>", 12))
     endif
-  elseif !empty(s:placeholder)
+  elseif !empty(s:placeholder) && len(s:placeholder.token) > s:placeholder.n + 1
     let pos = s:placeholder.pos
     let pos[2] = len(s:placeholder.token[s:placeholder.n]) + 1
     call setpos('.', pos)
@@ -338,10 +338,12 @@ function! sonictemplate#apply(name, mode, ...) abort
     else
       exe "normal!" "v".(newpos[1]-pos[2]-1)."l\<c-g>"
     endif
-    snoremap <plug>(sonictemplate-jump-prev) <esc>:call sonictemplate#jump_prev()<cr>
-    snoremap <plug>(sonictemplate-jump-next) <esc>:call sonictemplate#jump_next()<cr>
-    inoremap <plug>(sonictemplate-jump-prev) <c-r>=sonictemplate#jump_prev()<cr>
-    inoremap <plug>(sonictemplate-jump-next) <c-r>=sonictemplate#jump_next()<cr>
+    snoremap <plug>(sonictemplate-jump-prev) <esc>:call sonictemplate#jump_prev('s')<cr>
+    snoremap <plug>(sonictemplate-jump-next) <esc>:call sonictemplate#jump_next('s')<cr>
+    nnoremap <plug>(sonictemplate-jump-prev) <esc>:call sonictemplate#jump_prev('s')<cr>
+    snoremap <plug>(sonictemplate-jump-next) <esc>:call sonictemplate#jump_next('s')<cr>
+    inoremap <plug>(sonictemplate-jump-prev) <c-r>=sonictemplate#jump_prev('i')<cr>
+    inoremap <plug>(sonictemplate-jump-next) <c-r>=sonictemplate#jump_next('i')<cr>
     smap <c-p> <plug>(sonictemplate-jump-prev)
     smap <c-n> <plug>(sonictemplate-jump-next)
     imap <c-p> <plug>(sonictemplate-jump-prev)
@@ -354,7 +356,7 @@ function! s:escape(s) abort
   return substitute(escape(a:s, '\'), '\n', '\\n', 'g')
 endfunction
 
-function! sonictemplate#jump_prev()
+function! sonictemplate#jump_prev(mode)
   if s:placeholder.n == 0
     return ''
   endif
@@ -370,7 +372,7 @@ function! sonictemplate#jump_prev()
       let newpos = searchpos(s:escape(s:placeholder.token[n+1]), 'cn')
       let s:placeholder.n = n
       if newpos != [0, 0] && newpos[1] > pos[2]
-        if mode() =~ 'i'
+        if a:mode == 'i'
           call feedkeys("\<c-o>v".(newpos[1]-pos[2]-1)."l\<c-g>")
         else
           exe "normal!" "v".(newpos[1]-pos[2]-1)."l\<c-g>"
@@ -379,15 +381,11 @@ function! sonictemplate#jump_prev()
       return ''
     endif
   endif
-  if col('.') == col('$') - 1
-    startinsert!
-  else
-    call feedkeys("v\<c-g>")
-  endif
+  startinsert
   return ''
 endfunction
 
-function! sonictemplate#jump_next()
+function! sonictemplate#jump_next(mode)
   if s:placeholder.n+2 >= len(s:placeholder.token)
     return ''
   endif
@@ -403,7 +401,7 @@ function! sonictemplate#jump_next()
       let newpos = searchpos(s:escape(s:placeholder.token[n+1]), 'cn')
       let s:placeholder.n = n
       if newpos != [0, 0] && newpos[1] > pos[2]
-        if mode() =~ 'i'
+        if a:mode == 'i'
           call feedkeys("\<c-o>v".(newpos[1]-pos[2]-1)."l\<c-g>")
         else
           exe "normal!" "v".(newpos[1]-pos[2]-1)."l\<c-g>"
@@ -412,11 +410,7 @@ function! sonictemplate#jump_next()
       endif
     endif
   endif
-  if col('.') == col('$') - 1
-    startinsert!
-  else
-    call feedkeys("v\<c-g>")
-  endif
+  startinsert
   return ''
 endfunction
 

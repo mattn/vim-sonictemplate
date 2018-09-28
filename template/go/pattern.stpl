@@ -16,3 +16,10 @@
 \(\S\+\)\.log$
 	log.Println({{$1}})
 	{{_cursor_}}
+
+\(\S\+\)\.close$
+	defer {{$1}}.Close()
+	{{_cursor_}}
+
+\(\S\+\)\.query$
+	{{$1}}.Query("{{_cursor_}}")

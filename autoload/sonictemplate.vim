@@ -1,7 +1,7 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 03-Sep-2013.
+" Last Change: 25-Feb-2019.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -55,7 +55,17 @@ endfunction
 function! s:get_candidate(fts, lead)
   let fts = a:fts
   let filter = ''
-  let prefix = search('[^ \t]', 'wn') ? 'snip' : 'base'
+  if getcmdwintype() ==# ''
+    let prefix = search('[^ \t]', 'wn') ? 'snip' : 'base'
+  else
+    let prefix = 'base'
+    for line in getbufline(bufnr('#'), 1, '$')
+      if match(line, '[^ \t]') != -1
+        let prefix = 'snip'
+        break
+      endif
+    endfor
+  endif
   try
     let ft = s:get_filetype()
     let cxt = sonictemplate#lang#{ft!=""?ft:"_"}#guess()

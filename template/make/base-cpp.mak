@@ -1,9 +1,9 @@
 SRCS = \
-{{_expr_:join(map(split(glob('*.cpp'),"\n")+split(glob('*.cxx'),"\n"),'"\t".substitute(v:val,"\\","/","g")')," \\\n")}}
+{{_expr_:join(map(split(glob('*.cpp'),"\n")+split(glob('*.cxx'),"\n")+split(glob('*.cc'),"\n"),'"\t".substitute(v:val,"\\","/","g")')," \\\n")}}
 
-OBJS = $(subst .cxx,.o,$(subst .cpp,.o,$(SRCS))) 
+OBJS = $(subst .cc,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(SRCS))))
 
-CFLAGS = 
+CXXFLAGS = 
 LIBS = 
 TARGET = {{_expr_:expand('%:p:h:t')}}
 ifeq ($(OS),Windows_NT)
@@ -18,10 +18,10 @@ $(TARGET) : $(OBJS)
 	g++ -std=c++14 -o $@ $(OBJS) $(LIBS)
 
 .cxx.o :
-	g++ -std=c++14 -c $(CFLAGS) -I. $< -o $@
+	g++ -std=c++14 -c $(CXXFLAGS) -I. $< -o $@
 
 .cpp.o :
-	g++ -std=c++14 -c $(CFLAGS) -I. $< -o $@
+	g++ -std=c++14 -c $(CXXFLAGS) -I. $< -o $@
 
 clean :
 	rm -f *.o $(TARGET)

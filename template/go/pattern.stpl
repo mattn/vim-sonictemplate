@@ -23,3 +23,36 @@
 
 \(\S\+\)\.query$
 	{{$1}}.Query("{{_cursor_}}")
+
+\(\S.*\)\.pr\%[int]$
+	fmt.Print({{$1}})
+	{{_cursor_}}
+
+\(\S.*\)\.pr\%[int]f$
+	fmt.Printf({{$1}})
+	{{_cursor_}}
+
+\(\S.*\)\.pr\%[int]l\%[n]$
+	fmt.Println({{$1}})
+	{{_cursor_}}
+
+\(\S.*\)\.fpr\%[int]$
+	fmt.Fprint({{$1}})
+	{{_cursor_}}
+
+\(\S.*\)\.fpr\%[int]f$
+	fmt.Fprintf({{$1}})
+	{{_cursor_}}
+
+\(\S.*\)\.fpr\%[int]l\%[n]$
+	fmt.Fprintln({{$1}})
+	{{_cursor_}}
+
+\(\S.*\)\.spr\%[int]$
+	{{_cursor_}} fmt.Sprint({{$1}})
+
+\(\S.*\)\.spr\%[int]f$
+	{{_cursor_}} fmt.Sprintf({{$1}})
+
+\(\S.*\)\.spr\%[int]l\%[n]$
+	{{_cursor_}} fmt.Sprintln({{$1}})

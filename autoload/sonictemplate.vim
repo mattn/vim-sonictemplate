@@ -336,6 +336,7 @@ function! sonictemplate#postfix()
     return ''
   endif
   let line = getline('.')[:col('.')]
+  let line = escape(line, '\')
   for k in keys(s:pat[&ft])
     let m = matchstr(line, k)
     if len(m) > 0

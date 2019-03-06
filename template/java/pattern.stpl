@@ -1,0 +1,11 @@
+\(\S.*\)\.pr\%[int]$
+	System.out.print({{$1}});
+	{{_cursor_}}
+
+\(\S.*\)\.pr\%[int]f$
+	System.out.printf({{$1}});
+	{{_cursor_}}
+
+\(\S.*\)\.pr\%[int]l\%[n]$
+	System.out.println({{$1}});
+	{{_cursor_}}

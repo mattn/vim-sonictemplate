@@ -1,7 +1,7 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 25-Feb-2019.
+" Last Change: 07-Mar-2019.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -90,7 +90,7 @@ function! s:get_candidate(fts, lead)
     for tmpldir in s:tmpldir
       let tmp += map(split(globpath(join([tmpldir, ft], '/'), 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
     endfor
-    if &ft == ''
+    if s:get_raw_filetype() == ''
       for tmpldir in s:tmpldir
         let tmp += sort(map(split(globpath(join([tmpldir, '_'], '/'), 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'))
       endfor
@@ -129,11 +129,11 @@ function! s:get_candidate(fts, lead)
 endfunction
 
 function! sonictemplate#complete(lead, cmdline, curpos) abort
-  return s:get_candidate([&ft, s:get_filetype(), sonictemplate#get_filetype()], a:lead)
+  return s:get_candidate([s:get_raw_filetype(), s:get_filetype(), sonictemplate#get_filetype()], a:lead)
 endfunction
 
 function! sonictemplate#complete_intelligent(lead, cmdline, curpos) abort
-  return s:get_candidate([sonictemplate#get_filetype(), &ft, s:get_filetype()], a:lead)
+  return s:get_candidate([sonictemplate#get_filetype(), s:get_raw_filetype(), s:get_filetype()], a:lead)
 endfunction
 
 function! s:setopt(k, v)
@@ -153,7 +153,11 @@ endfunction
 let s:vars = {}
 
 function! s:get_filetype()
-  return matchstr(&ft, '^\([^.]\)\+')
+  return matchstr(s:get_raw_filetype(), '^\([^.]\)\+')
+endfunction
+
+function! s:get_raw_filetype()
+  return getcmdwintype() ==# '' ? &ft : getbufvar('#', '&ft')
 endfunction
 
 function! sonictemplate#getvar(name)
@@ -176,9 +180,9 @@ function! sonictemplate#apply(name, mode, ...) abort
   let ft = s:getopt('filetype')
   if ft == ''
     if get(a:000, 0, 0)
-      let fts = [sonictemplate#get_filetype(), &ft, s:get_filetype(), '_']
+      let fts = [sonictemplate#get_filetype(), s:get_raw_filetype(), s:get_filetype(), '_']
     else
-      let fts = [&ft, s:get_filetype(), sonictemplate#get_filetype(), '_']
+      let fts = [s:get_raw_filetype(), s:get_filetype(), sonictemplate#get_filetype(), '_']
     endif
   else
     let fts = [ft]
@@ -237,8 +241,8 @@ function! sonictemplate#apply(name, mode, ...) abort
     if exists('V')
       unlet V
     endif
-    if has_key(gvars, &ft) && type(gvars[&ft]) == 4 && has_key(gvars[&ft], var)
-      let V = gvars[&ft][var]
+    if has_key(gvars, s:get_raw_filetype()) && type(gvars[s:get_raw_filetype()]) == 4 && has_key(gvars[s:get_raw_filetype()], var)
+      let V = gvars[s:get_raw_filetype()][var]
       if type(V) == 1 | let val = V | else | let val = string(V) | endif
     elseif has_key(gvars, '_') && type(gvars['_']) == 4 && has_key(gvars['_'], var)
       let V = gvars['_'][var]
@@ -332,16 +336,16 @@ let s:pat = {}
 
 function! sonictemplate#postfix()
   call sonictemplate#load_postfix()
-  if !has_key(s:pat, &ft)
+  if !has_key(s:pat, s:get_raw_filetype())
     return ''
   endif
   let line = getline('.')[:col('.')]
-  for k in keys(s:pat[&ft])
+  for k in keys(s:pat[s:get_raw_filetype()])
     let m = matchstr(line, k)
     if len(m) > 0
       let ml = matchlist(line, k)
       let line = line[:-len(m)-1]
-      let c = join(s:pat[&ft][k], "\n")
+      let c = join(s:pat[s:get_raw_filetype()][k], "\n")
       for i in range(1, 9)
         let c = substitute(c, '{{$' . i . '}}', ml[i], 'g')
       endfor
@@ -383,7 +387,7 @@ function! sonictemplate#postfix()
 endfunction
 
 function! sonictemplate#load_postfix()
-  let ft = &ft
+  let ft = s:get_raw_filetype()
   if has_key(s:pat, ft)
     return
   endif

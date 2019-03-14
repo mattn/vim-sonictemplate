@@ -340,7 +340,7 @@ function! sonictemplate#postfix()
     return ''
   endif
   let line = getline('.')[:col('.')]
-  let line = escape(line, '\')
+  let line = escape(line, '\&')
   for k in keys(s:pat[s:get_raw_filetype()])
     let m = matchstr(line, k)
     if len(m) > 0

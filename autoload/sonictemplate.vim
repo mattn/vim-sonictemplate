@@ -281,7 +281,7 @@ function! sonictemplate#apply(name, mode, ...) abort
   if !buffer_is_not_empty
     let c = substitute(c, '{{_inline_}}\s*', '', 'g')
     if &expandtab || (&shiftwidth && &tabstop != &shiftwidth)
-      let c = substitute(c, "\t", repeat(' ', &shiftwidth), 'g')
+      let c = substitute(c, "\t", repeat(' ', shiftwidth()), 'g')
     endif
     silent! %d _
     silent! put = c
@@ -309,9 +309,9 @@ function! sonictemplate#apply(name, mode, ...) abort
       endif
       let c = indent . substitute(substitute(c, "\n", "\n".indent, 'g'), "\n".indent."\n", "\n\n", 'g')
       if len(indent) && (&expandtab || (&shiftwidth && &tabstop != &shiftwidth) || indent =~ '^ \+$')
-        let c = substitute(c, "\t", repeat(' ', min([len(indent), &shiftwidth])), 'g')
+        let c = substitute(c, "\t", repeat(' ', min([len(indent), shiftwidth()])), 'g')
       elseif &expandtab || (&shiftwidth && &tabstop != &shiftwidth)
-        let c = substitute(c, "\t", repeat(' ', &shiftwidth), 'g')
+        let c = substitute(c, "\t", repeat(' ', shiftwidth()), 'g')
       endif
       if line('.') < line('$')
         silent! normal! dd
@@ -360,9 +360,9 @@ function! sonictemplate#postfix()
       if c =~ "\n"
         let c = indent . substitute(substitute(c, "\n", "\n".indent, 'g'), "\n".indent."\n", "\n\n", 'g')
         if len(indent) && (&expandtab || (&shiftwidth && &tabstop != &shiftwidth) || indent =~ '^ \+$')
-          let c = substitute(c, "\t", repeat(' ', min([len(indent), &shiftwidth])), 'g')
+          let c = substitute(c, "\t", repeat(' ', min([len(indent), shiftwidth()])), 'g')
         elseif &expandtab || (&shiftwidth && &tabstop != &shiftwidth)
-          let c = substitute(c, "\t", repeat(' ', &shiftwidth), 'g')
+          let c = substitute(c, "\t", repeat(' ', shiftwidth()), 'g')
         endif
         call setline('.', line)
         if line('.') < line('$')

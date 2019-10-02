@@ -379,7 +379,7 @@ function! sonictemplate#postfix()
       if stridx(c, '{{_cursor_}}') != -1
         silent! call search('{{_cursor_}}\zs', 'w')
         silent! foldopen
-        silent! call feedkeys(repeat("\<bs>", 12))
+        silent! call feedkeys(repeat("\<bs>", 12), 'n')
       endif
       break
     endif

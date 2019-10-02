@@ -327,7 +327,7 @@ function! sonictemplate#apply(name, mode, ...) abort
     else
       silent! call search('{{_cursor_}}\zs', 'w')
       silent! foldopen
-      silent! call feedkeys(repeat("\<bs>", 12))
+      silent! call feedkeys(repeat("\<bs>", 12), 'n')
     endif
   endif
 endfunction

@@ -56,3 +56,26 @@
 
 \(\S.*\)\.spr\%[int]l\%[n]$
 	{{_cursor_}} fmt.Sprintln({{$1}})
+
+\(\S\+\)\.func$
+	func {{$1}} {
+		{{_cursor_}}
+	}
+
+\(\S\+\)\.struct$
+	type {{$1}} struct {
+		{{_cursor_}}
+	}
+
+\(\S\+\)\.int$
+	{{$1}}	int
+	{{_cursor_}}
+
+\(\S\+\)\.string$
+	{{$1}}	string
+	{{_cursor_}}
+
+\(\S\+\)\.bool$
+	{{$1}}	bool
+	{{_cursor_}}
+

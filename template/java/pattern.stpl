@@ -9,3 +9,9 @@
 \(\S.*\)\.pr\%[int]l\%[n]$
 	System.out.println({{$1}});
 	{{_cursor_}}
+
+\(\S.*\)\.false$
+	assertFalse({{$1}});{{_cursor_}}
+
+\(\S.*\)\.true$
+	assertTrue({{$1}});{{_cursor_}}

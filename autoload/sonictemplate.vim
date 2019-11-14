@@ -285,7 +285,7 @@ function! sonictemplate#apply(name, mode, ...) abort
     endif
     silent! %d _
     silent! put = c
-    silent! normal! ggdd
+    silent! normal! gg"_dd
   else
     if c[len(c)-1] == "\n"
       let c = c[:-2]
@@ -314,7 +314,7 @@ function! sonictemplate#apply(name, mode, ...) abort
         let c = substitute(c, "\t", repeat(' ', shiftwidth()), 'g')
       endif
       if line('.') < line('$')
-        silent! normal! dd
+        silent! normal! "_dd
       endif
       silent! put! =c
     endif

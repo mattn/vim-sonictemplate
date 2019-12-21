@@ -68,7 +68,7 @@ function! s:get_candidate(fts, lead)
   endif
   try
     let ft = s:get_filetype()
-    let cxt = sonictemplate#lang#{ft!=""?ft:"_"}#guess()
+    let cxt = sonictemplate#lang#{ft !=# '' ? ft : '_'}#guess()
     if has_key(cxt, 'prefix')
       let prefix = cxt['prefix']
       call s:setopt('prefix', cxt['prefix'])

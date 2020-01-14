@@ -295,7 +295,7 @@ function! sonictemplate#apply(name, mode, ...) abort
       let c = join(split(c, "\n"), "")
       let oldindentexpr = &indentexpr
       let &indentexpr = ''
-      silent! exe "normal! a\<c-r>=c\<cr>"
+      noautocmd silent! exe "normal! a\<c-r>=c\<cr>"
       let &indentexpr = oldindentexpr
       return
     else
@@ -373,7 +373,7 @@ function! sonictemplate#postfix()
         call setline('.', line)
         let oldindentexpr = &indentexpr
         let &indentexpr = ''
-        silent! exe "normal! a\<c-r>=c\<cr>"
+        noautocmd silent! exe "normal! a\<c-r>=c\<cr>"
         let &indentexpr = oldindentexpr
       endif
       if stridx(c, '{{_cursor_}}') != -1

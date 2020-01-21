@@ -322,7 +322,9 @@ function! sonictemplate#apply(name, mode, ...) abort
   if stridx(c, '{{_cursor_}}') != -1
     silent! call search('\zs{{_cursor_}}', 'w')
     silent! foldopen
+    let curpos = getpos('.')
     silent! normal! "_da}
+    call setpos('.', curpos)
   endif
 endfunction
 
@@ -373,7 +375,9 @@ function! sonictemplate#postfix()
       if stridx(c, '{{_cursor_}}') != -1
         silent! call search('\zs{{_cursor_}}', 'w')
         silent! foldopen
+        let curpos = getpos('.')
         silent! normal! "_da}
+        call setpos('.', curpos)
       endif
       break
     endif

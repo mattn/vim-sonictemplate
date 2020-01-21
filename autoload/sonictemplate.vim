@@ -1,7 +1,7 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 07-Mar-2019.
+" Last Change: 21-Jan-2020.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -320,15 +320,11 @@ function! sonictemplate#apply(name, mode, ...) abort
     endif
   endif
   if stridx(c, '{{_cursor_}}') != -1
-    if a:mode == 'n'
-      silent! call search('\zs{{_cursor_}}', 'w')
-      silent! foldopen
-      silent! normal! 12"_x
-    else
-      silent! call search('{{_cursor_}}\zs', 'w')
-      silent! foldopen
-      silent! call feedkeys(repeat("\<bs>", 12), 'n')
-    endif
+    silent! call search('\zs{{_cursor_}}', 'w')
+    silent! foldopen
+    let curpos = getpos('.')
+    silent! normal! "_da}
+    call setpos('.', curpos)
   endif
 endfunction
 
@@ -377,9 +373,11 @@ function! sonictemplate#postfix()
         let &indentexpr = oldindentexpr
       endif
       if stridx(c, '{{_cursor_}}') != -1
-        silent! call search('{{_cursor_}}\zs', 'w')
+        silent! call search('\zs{{_cursor_}}', 'w')
         silent! foldopen
-        silent! call feedkeys(repeat("\<bs>", 12), 'n')
+        let curpos = getpos('.')
+        silent! normal! "_da}
+        call setpos('.', curpos)
       endif
       break
     endif

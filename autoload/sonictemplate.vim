@@ -1,7 +1,7 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 04-Jun-2019.
+" Last Change: 21-Jan-2020.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -68,7 +68,7 @@ function! s:get_candidate(fts, lead)
   endif
   try
     let ft = s:get_filetype()
-    let cxt = sonictemplate#lang#{ft!=""?ft:"_"}#guess()
+    let cxt = sonictemplate#lang#{ft !=# '' ? ft : '_'}#guess()
     if has_key(cxt, 'prefix')
       let prefix = cxt['prefix']
       call s:setopt('prefix', cxt['prefix'])
@@ -281,11 +281,11 @@ function! sonictemplate#apply(name, mode, ...) abort
   if !buffer_is_not_empty
     let c = substitute(c, '{{_inline_}}\s*', '', 'g')
     if &expandtab || (&shiftwidth && &tabstop != &shiftwidth)
-      let c = substitute(c, "\t", repeat(' ', &shiftwidth), 'g')
+      let c = substitute(c, "\t", repeat(' ', shiftwidth()), 'g')
     endif
     silent! %d _
     silent! put = c
-    silent! normal! ggdd
+    silent! normal! gg"_dd
   else
     if c[len(c)-1] == "\n"
       let c = c[:-2]
@@ -295,7 +295,7 @@ function! sonictemplate#apply(name, mode, ...) abort
       let c = join(split(c, "\n"), "")
       let oldindentexpr = &indentexpr
       let &indentexpr = ''
-      silent! exe "normal! a\<c-r>=c\<cr>"
+      noautocmd silent! exe "normal! a\<c-r>=c\<cr>"
       let &indentexpr = oldindentexpr
       return
     else
@@ -309,12 +309,12 @@ function! sonictemplate#apply(name, mode, ...) abort
       endif
       let c = indent . substitute(substitute(c, "\n", "\n".indent, 'g'), "\n".indent."\n", "\n\n", 'g')
       if len(indent) && (&expandtab || (&shiftwidth && &tabstop != &shiftwidth) || indent =~ '^ \+$')
-        let c = substitute(c, "\t", repeat(' ', min([len(indent), &shiftwidth])), 'g')
+        let c = substitute(c, "\t", repeat(' ', min([len(indent), shiftwidth()])), 'g')
       elseif &expandtab || (&shiftwidth && &tabstop != &shiftwidth)
-        let c = substitute(c, "\t", repeat(' ', &shiftwidth), 'g')
+        let c = substitute(c, "\t", repeat(' ', shiftwidth()), 'g')
       endif
       if line('.') < line('$')
-        silent! normal! dd
+        silent! normal! "_dd
       endif
       silent! put! =c
     endif
@@ -354,9 +354,9 @@ function! sonictemplate#postfix()
       if c =~ "\n"
         let c = indent . substitute(substitute(c, "\n", "\n".indent, 'g'), "\n".indent."\n", "\n\n", 'g')
         if len(indent) && (&expandtab || (&shiftwidth && &tabstop != &shiftwidth) || indent =~ '^ \+$')
-          let c = substitute(c, "\t", repeat(' ', min([len(indent), &shiftwidth])), 'g')
+          let c = substitute(c, "\t", repeat(' ', min([len(indent), shiftwidth()])), 'g')
         elseif &expandtab || (&shiftwidth && &tabstop != &shiftwidth)
-          let c = substitute(c, "\t", repeat(' ', &shiftwidth), 'g')
+          let c = substitute(c, "\t", repeat(' ', shiftwidth()), 'g')
         endif
         call setline('.', line)
         if line('.') < line('$')
@@ -367,7 +367,7 @@ function! sonictemplate#postfix()
         call setline('.', line)
         let oldindentexpr = &indentexpr
         let &indentexpr = ''
-        silent! exe "normal! a\<c-r>=c\<cr>"
+        noautocmd silent! exe "normal! a\<c-r>=c\<cr>"
         let &indentexpr = oldindentexpr
       endif
       if stridx(c, '{{_cursor_}}') != -1

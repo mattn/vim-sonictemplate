@@ -8,6 +8,8 @@
 
 ## Installation
 
+For [vim-plug](https://github.com/junegunn/vim-plug) plugin manager:
+
 ```
 Plug '{{_input_:plug}}'
 ```

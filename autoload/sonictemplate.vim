@@ -169,9 +169,20 @@ function! sonictemplate#getvar(name) abort
   return has_key(s:vars[ft], a:name) ? s:vars[ft][a:name] : ''
 endfunction
 
+function! s:dir() abort
+  let l:name = expand('%:t:r:')
+  if empty(l:name)
+    let l:name = fnamemodify(getcwd(), ':t')
+  endif
+  return substitute(l:name, '[^a-zA-Z0-9]', '_', 'g')
+endfunction
+
 function! s:name(default) abort
   let l:name = expand('%:t:r:')
-  return empty(l:name) ? a:default : l:name
+  if empty(l:name)
+    let l:name = a:default
+  endif
+  return substitute(l:name, '[^a-zA-Z0-9]', '_', 'g')
 endfunction
 
 function! sonictemplate#apply(name, mode, ...) abort
@@ -223,6 +234,7 @@ function! sonictemplate#apply(name, mode, ...) abort
   let ft = s:get_filetype()
   let ft = ft != "" ? ft : "_"
   let c = join(readfile(f), "\n")
+  let c = substitute(c, '{{_dir_}}', s:dir(), 'g')
   let c = substitute(c, '{{_name_}}', s:name('Main'), 'g')
   let c = substitute(c, '{{_name_:\([^}]\+\)}}', '\=s:name(submatch(1))', 'g')
   let tmp = c

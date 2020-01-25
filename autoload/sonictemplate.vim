@@ -170,7 +170,7 @@ function! sonictemplate#getvar(name) abort
 endfunction
 
 function! s:dir() abort
-  let l:name = expand('%:t:r:')
+  let l:name = expand('%:p:h:t:r')
   if empty(l:name)
     let l:name = fnamemodify(getcwd(), ':t')
   endif
@@ -178,7 +178,7 @@ function! s:dir() abort
 endfunction
 
 function! s:name(default) abort
-  let l:name = expand('%:t:r:')
+  let l:name = expand('%:t:r')
   if empty(l:name)
     let l:name = a:default
   endif

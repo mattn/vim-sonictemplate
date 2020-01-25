@@ -1,0 +1,15 @@
+{
+  "name": "{{_dir_}}",
+  "description": "{{_cursor_}}",
+  "license": "",
+  "version": "1.0.0",
+  "bin": "./cli.js",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}

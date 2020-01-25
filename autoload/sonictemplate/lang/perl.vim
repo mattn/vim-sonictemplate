@@ -1,4 +1,4 @@
-function! sonictemplate#lang#perl#guess()
+function! sonictemplate#lang#perl#guess() abort
   if expand('%:t') ==# 'Makefile.PL'
     return {
     \ 'filter': 'make',

@@ -34,7 +34,7 @@ function! sonictemplate#select_intelligent(mode) abort
   return ''
 endfunction
 
-function! sonictemplate#get_filetype()
+function! sonictemplate#get_filetype() abort
   let c = col('.')
   if c == col('$')
     let c -= 1
@@ -52,7 +52,7 @@ function! sonictemplate#get_filetype()
   return ft
 endfunction
 
-function! s:get_candidate(fts, lead)
+function! s:get_candidate(fts, lead) abort
   let fts = a:fts
   let filter = ''
   if getcmdwintype() ==# ''
@@ -136,14 +136,14 @@ function! sonictemplate#complete_intelligent(lead, cmdline, curpos) abort
   return s:get_candidate([sonictemplate#get_filetype(), s:get_raw_filetype(), s:get_filetype()], a:lead)
 endfunction
 
-function! s:setopt(k, v)
+function! s:setopt(k, v) abort
   if !exists('b:sonictemplate')
     let b:sonictemplate = {}
   endif
   let b:sonictemplate[a:k] = a:v
 endfunction
 
-function! s:getopt(k)
+function! s:getopt(k) abort
   if !exists('b:sonictemplate') || !has_key(b:sonictemplate, a:k)
     return ''
   endif
@@ -152,21 +152,26 @@ endfunction
 
 let s:vars = {}
 
-function! s:get_filetype()
+function! s:get_filetype() abort
   return matchstr(s:get_raw_filetype(), '^\([^.]\)\+')
 endfunction
 
-function! s:get_raw_filetype()
+function! s:get_raw_filetype() abort
   return getcmdwintype() ==# '' ? &ft : getbufvar('#', '&ft')
 endfunction
 
-function! sonictemplate#getvar(name)
+function! sonictemplate#getvar(name) abort
   let ft = s:get_filetype()
   let ft = ft != "" ? ft : "_"
   if !has_key(s:vars, ft)
     return ''
   endif
   return has_key(s:vars[ft], a:name) ? s:vars[ft][a:name] : ''
+endfunction
+
+function! s:name(default) abort
+  let l:name = expand('%:t:r:')
+  return empty(l:name) ? a:default : l:name
 endfunction
 
 function! sonictemplate#apply(name, mode, ...) abort
@@ -218,7 +223,8 @@ function! sonictemplate#apply(name, mode, ...) abort
   let ft = s:get_filetype()
   let ft = ft != "" ? ft : "_"
   let c = join(readfile(f), "\n")
-  let c = substitute(c, '{{_name_}}', expand('%:t:r:'), 'g')
+  let c = substitute(c, '{{_name_}}', s:name('Main'), 'g')
+  let c = substitute(c, '{{_name_:\([^}]\+\)}}', '\=s:name(submatch(1))', 'g')
   let tmp = c
   let mx = '{{_input_:\(.\{-}\)}}'
   if !has_key(s:vars, ft)
@@ -330,7 +336,7 @@ endfunction
 
 let s:pat = {}
 
-function! sonictemplate#postfix()
+function! sonictemplate#postfix() abort
   call sonictemplate#load_postfix()
   if !has_key(s:pat, s:get_raw_filetype())
     return ''
@@ -385,7 +391,7 @@ function! sonictemplate#postfix()
   return ''
 endfunction
 
-function! sonictemplate#load_postfix()
+function! sonictemplate#load_postfix() abort
   let ft = s:get_raw_filetype()
   if has_key(s:pat, ft)
     return

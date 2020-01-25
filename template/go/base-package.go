@@ -1,3 +1,3 @@
-package {{_name_}}
+package {{_name_:main}}
 
 {{_cursor_}}

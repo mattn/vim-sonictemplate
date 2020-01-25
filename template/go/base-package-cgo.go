@@ -1,4 +1,4 @@
-package {{_name_}}
+package {{_name_:main}}
 
 /*
 #include {{_cursor_}}

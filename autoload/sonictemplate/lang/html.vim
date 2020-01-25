@@ -1,4 +1,4 @@
-function! sonictemplate#lang#html#guess()
+function! sonictemplate#lang#html#guess() abort
   let [m1, m2] = ['<\([^ >]\+\)[^>]*>', '</[^>]\+>\zs']
   let area = [searchpairpos(m1, '\%#', m2, 'bnW'), searchpos(m2, 'nW')]
   if area[0][0] == 0 || area[1][0] == 0

@@ -6,16 +6,16 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! unite#sources#sonictemplate#define()"{{{
+function! unite#sources#sonictemplate#define() abort "{{{
   return s:source
-endfunction"}}}
+endfunction "}}}
 
 let s:source = {
 \ 'name' : 'sonictemplate',
 \ 'description' : 'disp templates for sonictemplate',
 \}
 
-function! s:source.gather_candidates(args, context)"{{{
+function! s:source.gather_candidates(args, context) abort "{{{
   call unite#print_message('[sonictemplate]')
   return s:uniq(map(
 \     sonictemplate#complete("", "", 0), '{
@@ -27,10 +27,10 @@ function! s:source.gather_candidates(args, context)"{{{
 \     "action__path" : v:val,
 \   }'
 \ ))
-endfunction"}}}
+endfunction "}}}
 
 " local functions {{{
-function! s:uniq(candidates)
+function! s:uniq(candidates) abort
   let has = {}
   let uniq_list = []
   for candidate in a:candidates
@@ -44,7 +44,7 @@ function! s:uniq(candidates)
   return uniq_list
 endfunction
 
-function! s:to_template_name(path)
+function! s:to_template_name(path) abort
   return substitute(fnamemodify(a:path, ':t:r'), '^\%(base\|snip\)-', '', '')
 endfunction
 " }}}

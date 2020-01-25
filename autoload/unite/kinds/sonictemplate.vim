@@ -6,9 +6,9 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! unite#kinds#sonictemplate#define()"{{{
+function! unite#kinds#sonictemplate#define() abort "{{{
   return s:kind
-endfunction"}}}
+endfunction "}}}
 
 let s:kind = {
 \ 'name' : 'sonictemplate',
@@ -25,12 +25,12 @@ let s:kind.action_table.insert = {
 \ 'is_invalidate_cache' : 0,
 \ 'is_listed' : 1,
 \}
-function! s:kind.action_table.insert.func(candidate)"{{{
+function! s:kind.action_table.insert.func(candidate) abort "{{{
   call sonictemplate#apply(
 \   a:candidate.word,
 \   a:candidate.action__mode,
 \ )
-endfunction"}}}
+endfunction "}}}
 
 " local functions {{{
 " }}}

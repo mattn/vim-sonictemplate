@@ -1,4 +1,4 @@
-*sonictemplate-vim.txt*	SonicTemplate for Vim
+*sonictemplate.txt*	SonicTemplate for Vim
 
 	   -------------------------------------------------------
 		  SonicTemplate: hi speed coding method
@@ -6,23 +6,23 @@
 
 Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 WebSite: http://mattn.kaoriya.net/
-Repository: http://github.com/mattn/sonictemplate-vim
-Site: http://mattn.github.com/sonictemplate-vim
+Repository: http://github.com/mattn/vim-sonictemplate
+Site: http://mattn.github.com/vim-sonictemplate
 License: BSD style license
 
 ==============================================================================
-CONTENTS                                           *sonictemplate-vim-contents*
+CONTENTS                                           *sonictemplate-contents*
 
-Introduction           |sonictemplate-vim-introduction|
-Install                |sonictemplate-vim-install|
-Tutorial               |sonictemplate-vim-tutorial|
-Postfix Completion     |sonictemplate-vim-postfix-completion|
-Customize              |sonictemplate-vim-customize|
-Unite Source           |sonictemplate-vim-unitesource|
-Write Your Template    |sonictemplate-vim-writetemplate|
+Introduction           |sonictemplate-introduction|
+Install                |sonictemplate-install|
+Tutorial               |sonictemplate-tutorial|
+Postfix Completion     |sonictemplate-postfix-completion|
+Customize              |sonictemplate-customize|
+Unite Source           |sonictemplate-unitesource|
+Write Your Template    |sonictemplate-writetemplate|
 
 ==============================================================================
-INTRODUCTION                                   *sonictemplate-vim-introduction*
+INTRODUCTION                                   *sonictemplate-introduction*
 
 |SonicTemplate| is easy and high speed coding method.
 
@@ -31,7 +31,7 @@ INTRODUCTION                                   *sonictemplate-vim-introduction*
  * Flexible customization.
 
 ==============================================================================
-INSTALL                                             *sonictemplate-vim-install*
+INSTALL                                             *sonictemplate-install*
 
 Install the distributed files into Vim runtime directory which is usually
 ~/.vim/, or $HOME/vimfiles on Windows.
@@ -40,7 +40,7 @@ If you install pathogen that provided from Tim Pope, you should extract the
 file into 'bundle' directory.
 
 ==============================================================================
-TUTORIAL                                           *sonictemplate-vim-tutorial*
+TUTORIAL                                           *sonictemplate-tutorial*
 
 For example, you are writing C++ file.
 
@@ -107,7 +107,7 @@ For example, you are writing C++ file.
   }
 <
 ==============================================================================
-POSTFIX COMPLETION                         *sonictemplate-vim-postfix-completion*
+POSTFIX COMPLETION                         *sonictemplate-postfix-completion*
 
 Sonictemplate provide postfix-completion. For example: >
 
@@ -135,7 +135,7 @@ The pattern must be located at leading of per lines. The texts should be
 expanded are following with tab characters prefixed.
 
 ==============================================================================
-CUSTOMIZE                                         *sonictemplate-vim-customize*
+CUSTOMIZE                                         *sonictemplate-customize*
 
 You can modify template directory for your-self templates: >
   let g:sonictemplate_vim_template_dir = '/path/to/your/template/directory'
@@ -158,7 +158,7 @@ default C language template 'main' is like following.
       return 0;
   }
 
-This template is stored in 'sonictemplate-vim/template/c/base-main.c'.
+This template is stored in 'vim-sonictemplate/template/c/base-main.c'.
 If you store base-main.c in another template directory that is specified
 |g:sonictemplate_vim_template_dir|, it will be overrided with your's one.
 
@@ -166,7 +166,7 @@ If you store base-main.c in another template directory that is specified
 Specify your template directory if you want.
 
                                                        *sonictemplate_vim_vars*
-When template contains |{{_input_:var}}|, sonictemplate-vim ask you to input
+When template contains |{{_input_:var}}|, sonictemplate ask you to input
 value. But in most of cases, it's always same value, maybe. For example, if
 you want to set 'author' in LICENSE-mit template as your name, set like below: >
 
@@ -177,7 +177,7 @@ you want to set 'author' in LICENSE-mit template as your name, set like below: >
   \}
 <
 ==============================================================================
-UNITE SOURCE                                    *sonictemplate-vim-unitesource*
+UNITE SOURCE                                    *sonictemplate-unitesource*
 
 You can use unite source for sonictemplate. For example,
 >
@@ -185,13 +185,13 @@ You can use unite source for sonictemplate. For example,
 <
 
 ==============================================================================
-WRITE YOUR TEMPLATE                           *sonictemplate-vim-writetemplate*
+WRITE YOUR TEMPLATE                           *sonictemplate-writetemplate*
 
 Templates are stored in the directory that "g:sonictemplate_vim_template_dir"
 variable specified. On unix, directory structure is following.
 Note that I'm using pathogen-vim.
 >
-  ~/.vim/bundle/sonictemplate-vim
+  ~/.vim/bundle/vim-sonictemplate
       plugin
         sonictemplate.vim
       doc

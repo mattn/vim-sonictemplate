@@ -1,14 +1,14 @@
-# sonictemplete-vim
+# sonictemplate
 
 Easy and high speed coding method.
 
 ## Template Completion
 
-![](https://raw.githubusercontent.com/mattn/sonictemplate-vim/master/screenshot1.gif)
+![](https://raw.githubusercontent.com/mattn/vim-sonictemplate/master/screenshot1.gif)
 
 ## Postfix Completion
 
-![](https://raw.githubusercontent.com/mattn/sonictemplate-vim/master/screenshot2.gif)
+![](https://raw.githubusercontent.com/mattn/vim-sonictemplate/master/screenshot2.gif)
 
 ## Basic Usage
 

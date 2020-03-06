@@ -409,7 +409,7 @@ function! sonictemplate#load_postfix() abort
     return
   endif
   let tmp = []
-  for tmpldir in s:tmpldir
+  for tmpldir in reverse(s:tmpldir)
     let tmp += split(globpath(join([tmpldir, ft], '/'), 'pattern.stpl'), "\n")
   endfor
   if len(tmp) == 0

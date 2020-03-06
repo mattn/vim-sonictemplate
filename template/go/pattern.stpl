@@ -79,3 +79,15 @@
 	{{$1}}	bool
 	{{_cursor_}}
 
+\(\S\+\)\.append$
+	{{$1}} = append({{$1}}, {{_cursor_}})
+
+\(\S\+\)\.jsondecode$
+	if err := json.NewDecoder({{$1}}).Decode({{_cursor_}}); err != nil {
+		return err
+	}
+
+\(\S\+\)\.jsonencode$
+	if err := json.NewEncoder({{$1}}).Encode({{_cursor_}}); err != nil {
+		return err
+	}

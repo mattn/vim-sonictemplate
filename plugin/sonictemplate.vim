@@ -20,36 +20,41 @@ let g:loaded_sonictemplate_vim = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-exe "command!" "-nargs=1" "-complete=customlist,sonictemplate#complete" get(g:, 'sonictemplate_commandname', 'Template') "call sonictemplate#apply(<f-args>, 'n')"
+exe 'command!' '-nargs=1' '-complete=customlist,sonictemplate#complete' get(g:, 'sonictemplate_commandname', 'Template') 'call sonictemplate#apply(<f-args>, "n")'
 
 nnoremap <plug>(sonictemplate) :call sonictemplate#select('n')<cr>
 inoremap <plug>(sonictemplate) <c-r>=sonictemplate#select('i')<cr>
-
-if get(g:, 'sonictemplate_key', '') == ''
-  nmap <unique> <c-y>t <plug>(sonictemplate)
-  imap <unique> <c-y>t <plug>(sonictemplate)
-  nmap <unique> <c-y><c-t> <plug>(sonictemplate)
-  imap <unique> <c-y><c-t> <plug>(sonictemplate)
-else
-  exe "nmap" g:sonictemplate_key "<plug>(sonictemplate)"
-  exe "imap" g:sonictemplate_key "<plug>(sonictemplate)"
+if !hasmapto('<plug>(sonictemplate)')
+  if get(g:, 'sonictemplate_key', '') == ''
+    nmap <unique> <c-y>t <plug>(sonictemplate)
+    imap <unique> <expr> <c-y>t pumvisible()?'<c-e><plug>(sonictemplate)':'<plug>(sonictemplate)'
+    nmap <unique> <c-y><c-t> <c-y>t
+    imap <unique> <c-y><c-t> <c-y>t
+  else
+    exe 'nmap' g:sonictemplate_key '<plug>(sonictemplate)'
+    exe 'imap' g:sonictemplate_key '<plug>(sonictemplate)'
+  endif
 endif
 
 nnoremap <plug>(sonictemplate-intelligent) :call sonictemplate#select_intelligent('n')<cr>
 inoremap <plug>(sonictemplate-intelligent) <c-r>=sonictemplate#select_intelligent('i')<cr>
-if get(g:, 'sonictemplate_intelligent_key', '') == ''
-  nmap <unique> <c-y>T <plug>(sonictemplate-intelligent)
-  imap <unique> <c-y>T <plug>(sonictemplate-intelligent)
-else
-  exe "nmap" g:sonictemplate_intelligent_key "<plug>(sonictemplate-intelligent)"
-  exe "imap" g:sonictemplate_intelligent_key "<plug>(sonictemplate-intelligent)"
+if !hasmapto('<plug>(sonictemplate-intelligent)')
+  if get(g:, 'sonictemplate_intelligent_key') == ''
+    nmap <unique> <c-y>T <plug>(sonictemplate-intelligent)
+    imap <unique> <expr> <c-y>T pumvisible()?'<c-e><plug>(sonictemplate-intelligent)':'<plug>(sonictemplate-intelligent)'
+  else
+    exe 'nmap' g:sonictemplate_intelligent_key '<plug>(sonictemplate-intelligent)'
+    exe 'imap' g:sonictemplate_intelligent_key '<plug>(sonictemplate-intelligent)'
+  endif
 endif
 
 inoremap <plug>(sonictemplate-postfix) <c-r>=sonictemplate#postfix()<cr>
-if get(g:, 'sonictemplate_postfix_key', '') == ''
-  imap <unique> <c-y><c-b> <plug>(sonictemplate-postfix)
-else
-  exe "imap" g:sonictemplate_postfix_key "<plug>(sonictemplate-postfix)"
+if !hasmapto('<plug>(sonictemplate-postfix)')
+  if get(g:, 'sonictemplate_postfix_key', '') == ''
+    imap <unique> <expr> <c-y><c-b> pumvisible()?'<c-e><plug>(sonictemplate-postfix)':'<plug>(sonictemplate-postfix)'
+  else
+    exe 'imap' g:sonictemplate_postfix_key '<plug>(sonictemplate-postfix)'
+  endif
 endif
 
 let &cpo = s:save_cpo

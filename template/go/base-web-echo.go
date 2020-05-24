@@ -13,3 +13,4 @@ func main() {
 	})
 	e.Logger.Fatal(e.Start(":8989"))
 }
+{{_filter_:web-echo}}

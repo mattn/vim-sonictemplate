@@ -64,7 +64,7 @@ main(int argc, char* argv[]) {
 		exit(1);
 	}
 
-    writer_len = sizeof(writer_addr);
+	writer_len = sizeof(writer_addr);
 	if ((client_fd = accept(server_fd,(struct sockaddr *)&writer_addr, &writer_len)) < 0) {
 		socket_perror("reader: accept");
 		exit(1);

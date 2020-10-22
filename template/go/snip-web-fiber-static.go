@@ -1,0 +1,1 @@
+app.Static("/static", "./public")

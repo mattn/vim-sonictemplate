@@ -3,25 +3,28 @@ SRCS = \
 
 OBJS = $(subst .cc,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(SRCS))))
 
-CXXFLAGS = 
+CXXFLAGS = -std=c++14
 LIBS = 
 TARGET = {{_expr_:expand('%:p:h:t')}}
 ifeq ($(OS),Windows_NT)
 TARGET := $(TARGET).exe
 endif
 
-.SUFFIXES: .cpp .cxx .o
+.SUFFIXES: .cpp .cc .cxx .o
 
 all : $(TARGET)
 
 $(TARGET) : $(OBJS)
-	g++ -std=c++14 -o $@ $(OBJS) $(LIBS)
+	g++ -o $@ $(OBJS) $(LIBS)
 
 .cxx.o :
-	g++ -std=c++14 -c $(CXXFLAGS) -I. $< -o $@
+	g++ -c $(CXXFLAGS) -I. $< -o $@
 
 .cpp.o :
-	g++ -std=c++14 -c $(CXXFLAGS) -I. $< -o $@
+	g++ -c $(CXXFLAGS) -I. $< -o $@
+
+.cc.o :
+	g++ -c $(CXXFLAGS) -I. $< -o $@
 
 clean :
 	rm -f *.o $(TARGET)

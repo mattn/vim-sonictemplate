@@ -28,4 +28,3 @@ $(TARGET) : $(OBJS)
 
 clean :
 	rm -f *.o $(TARGET)
-{{_filter_:make}}

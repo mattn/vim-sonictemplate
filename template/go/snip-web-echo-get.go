@@ -1,3 +1,3 @@
-e.GET("{{_cursor_}}", func(ctx echo.Context) error {
+e.GET("{{_cursor_}}", func(c echo.Context) error {
     
 })

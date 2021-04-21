@@ -3,7 +3,7 @@ SRCS = \
 
 OBJS = $(subst .cc,.o,$(subst .cxx,.o,$(subst .cpp,.o,$(SRCS))))
 
-CXXFLAGS = -std=c++14
+CXXFLAGS = -std=c++17
 LIBS = 
 TARGET = {{_expr_:expand('%:p:h:t')}}
 ifeq ($(OS),Windows_NT)

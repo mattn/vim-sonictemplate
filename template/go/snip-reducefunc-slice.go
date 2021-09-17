@@ -1,4 +1,4 @@
-func reduce{{_cursor_}}(a []{{_input_:type}}, f func(e1, e2 {{_input_:type}}) {{_input_:type}}, zero interface{}) {{_input_:type}} {
+func reduceFunc{{_cursor_}}(a []{{_input_:type}}, f func(e1, e2 {{_input_:type}}) {{_input_:type}}, zero interface{}) {{_input_:type}} {
     if len(a) == 0 || f == nil {
         var vv {{_input_:type}}
         return vv

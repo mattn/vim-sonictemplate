@@ -1,4 +1,4 @@
-func min(a []{{_input_:type}}) {{_input_:type}} {
+func min{{_cursor_}}(a []{{_input_:type}}) {{_input_:type}} {
 	m := a[0]
 	for _, v := range a {
 		if v < m {

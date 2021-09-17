@@ -1,6 +1,6 @@
-func find{{_cursor_}}(arr []{{_input_:type}}, v {{_input_:type}}) int {
-    for i := 0; i < len(arr); i++ {
-        if arr[i] == v {
+func find{{_cursor_}}(a []{{_input_:type}}, v {{_input_:type}}) int {
+    for i := 0; i < len(a); i++ {
+        if a[i] == v {
             return i
         }
     }

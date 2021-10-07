@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.20)
+
+project({{_expr_:expand('%:p:h:t')}})
+
+add_executable({{_expr_:expand('%:p:h:t')}} {{_expr_:join(split(glob('*.cpp'),"\n")+split(glob('*.cxx'),"\n")+split(glob('*.cc'),"\n"),' ')}})
+#target_link_libraries({{_expr_:expand('%:p:h:t')}} PRIVATE -lm)
+

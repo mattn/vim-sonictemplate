@@ -91,3 +91,9 @@
 	if err := json.NewEncoder({{$1}}).Encode({{_cursor_}}); err != nil {
 		return err
 	}
+
+\(\S\+\)\.split$
+	strings.Split({{$1}}, "{{_cursor_}}")
+
+\(\S\+\)\.join$
+	strings.Join({{$1}}, "{{_cursor_}}")

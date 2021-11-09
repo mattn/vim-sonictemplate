@@ -48,13 +48,13 @@
 	fmt.Fprintln({{$1}})
 	{{_cursor_}}
 
-\(\S.*\)\.spr\%[int]$
+\(\S.*\)\.spr\%[int]\>
 	{{_cursor_}} fmt.Sprint({{$1}})
 
-\(\S.*\)\.spr\%[int]f$
+\(\S.*\)\.spr\%[int]f\>
 	{{_cursor_}} fmt.Sprintf({{$1}})
 
-\(\S.*\)\.spr\%[int]l\%[n]$
+\(\S.*\)\.spr\%[int]l\%[n]\>
 	{{_cursor_}} fmt.Sprintln({{$1}})
 
 \(\S\+\)\.func$

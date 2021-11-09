@@ -354,23 +354,20 @@ function! sonictemplate#postfix() abort
     return ''
   endif
   let line = getline('.')[:col('.')]
+  let rest = getline('.')[col('.')-1:]
   let line = escape(line, '\&')
   for k in keys(s:pat[s:get_raw_filetype()])
+    let pos = matchstrpos(line, k)
     let m = matchstr(line, k)
     if len(m) > 0
       let ml = matchlist(line, k)
-      let line = line[:-len(m)-1]
+      let line = line[:pos[1]-1]
       let c = join(s:pat[s:get_raw_filetype()][k], "\n")
       for i in range(1, 9)
         let c = substitute(c, '{{$' . i . '}}', ml[i], 'g')
       endfor
       let indent = matchstr(line, '^\(\s*\)')
-      if line !~# '^\s*$'
-        let lhs = col('.') > 1 ? line[:col('.')-2] : ''
-        let rhs = line[len(lhs):]
-        let lhs = lhs[len(indent):]
-        let c = lhs . c . rhs
-      endif
+      let c .= rest
       if c =~# "\n"
         let c = indent . substitute(substitute(c, "\n", "\n".indent, 'g'), "\n".indent."\n", "\n\n", 'g')
         if len(indent) && (&expandtab || (&shiftwidth && &tabstop != &shiftwidth) || indent =~ '^ \+$')

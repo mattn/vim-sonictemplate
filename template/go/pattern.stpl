@@ -92,8 +92,8 @@
 		return err
 	}
 
-\([^ \t()]\+\)\.split\>
+\("[^"]*"\|\S\+\)\.split\>
 	strings.Split({{$1}}, "{{_cursor_}}")
 
-\(\S\+\)\.join\>
+\("[^"]*"\|\S\+\)\.join\>
 	strings.Join({{$1}}, "{{_cursor_}}")

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: 
+  labels:
+    app: 
+spec:
+  containers:
+    - name: 
+      image: 
+      imagePullPolicy: IfNotPresent
+  restartPolicy: Always
+

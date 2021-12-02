@@ -1,4 +1,4 @@
 apiVersion: v1
-kind: 
+kind: {{_cursor_}}
 metadata:
   

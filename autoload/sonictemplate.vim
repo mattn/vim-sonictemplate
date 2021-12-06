@@ -361,7 +361,7 @@ function! sonictemplate#postfix() abort
     let m = matchstr(line, k)
     if len(m) > 0
       let ml = matchlist(line, k)
-      let line = line[:pos[1]-1]
+      let line = line[pos[1]-1]
       let c = join(s:pat[s:get_raw_filetype()][k], "\n")
       for i in range(1, 9)
         let c = substitute(c, '{{$' . i . '}}', ml[i], 'g')

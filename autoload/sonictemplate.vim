@@ -90,7 +90,8 @@ function! s:get_candidate(fts, lead) abort
     for tmpldir in s:tmpldir
       let tmp += map(split(globpath(join([tmpldir, ft], '/'), 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
     endfor
-    if s:get_raw_filetype() == ''
+    let l:ft = s:get_raw_filetype()
+    if l:ft == '' || l:ft == 'text'
       for tmpldir in s:tmpldir
         let tmp += sort(map(split(globpath(join([tmpldir, '_'], '/'), 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'))
       endfor

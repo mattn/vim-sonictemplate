@@ -24,7 +24,7 @@ exe 'command!' '-nargs=1' '-complete=customlist,sonictemplate#complete' get(g:, 
 
 nnoremap <plug>(sonictemplate) :call sonictemplate#select('n')<cr>
 inoremap <plug>(sonictemplate) <c-r>=sonictemplate#select('i')<cr>
-vnoremap <plug>(sonictemplate) :call sonictemplate#select('v')<cr>
+vnoremap <plug>(sonictemplate) :<c-u>call sonictemplate#select('v')<cr>
 if !hasmapto('<plug>(sonictemplate)') && get(g:, 'sonictemplate_key', 1) !=# ''
   if empty(get(g:, 'sonictemplate_key'))
     nmap <unique> <c-y>t <plug>(sonictemplate)

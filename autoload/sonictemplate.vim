@@ -204,7 +204,7 @@ function! sonictemplate#apply(name, mode, ...) abort
   let name = matchstr(a:name, '\S\+')
   let buffer_is_not_empty = search('[^ \t]', 'wn')
   let fs = []
-  if mode() =~# '[vV]'
+  if a:mode =~# '[vV]'
     let prefix = 'wrap'
   else
     let prefix = s:getopt('prefix')
@@ -250,12 +250,23 @@ function! sonictemplate#apply(name, mode, ...) abort
     echomsg 'Template '.name.' is not exists.'
     return
   endif
+
+  let wrap = ''
+  if a:mode =~# '[vV]'
+    let save_regcont = @"
+    let save_regtype = getregtype('"')
+    silent! normal! gvc
+    let wrap = @"
+    call setreg('"', save_regcont, save_regtype)
+  endif
+
   let ft = s:get_filetype()
   let ft = ft !=# '' ? ft : '_'
   let c = join(readfile(f), "\n")
   let c = substitute(c, '{{_dir_}}', s:dir(), 'g')
   let c = substitute(c, '{{_name_}}', s:name('Main'), 'g')
   let c = substitute(c, '{{_name_:\([^}]\+\)}}', '\=s:name(submatch(1))', 'g')
+  let c = substitute(c, '{{_wrap_}}', wrap, 'g')
   let tmp = c
   let mx = '{{_input_:\(.\{-}\)}}'
   if !has_key(s:vars, ft)

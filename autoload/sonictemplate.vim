@@ -17,7 +17,8 @@ endif
 call add(s:tmpldir, expand('<sfile>:p:h:h') . '/template/')
 
 function! sonictemplate#select(mode) abort
-  let name = input(':Template ', '', 'customlist,sonictemplate#complete')
+  let fn = a:mode =~# '[vV]' ? 'customlist,sonictemplate#complete_wrap' : 'customlist,sonictemplate#complete'
+  let name = input(':Template ', '', fn)
   if name ==# ''
     return ''
   endif
@@ -26,7 +27,8 @@ function! sonictemplate#select(mode) abort
 endfunction
 
 function! sonictemplate#select_intelligent(mode) abort
-  let name = input(':Template ', '', 'customlist,sonictemplate#complete_intelligent')
+  let fn = a:mode =~# '[vV]' ? 'customlist,sonictemplate#complete_intelligent_wrap' : 'customlist,sonictemplate#complete_intelligent'
+  let name = input(':Template ', '', fn)
   if name ==# ''
     return ''
   endif
@@ -52,19 +54,23 @@ function! sonictemplate#get_filetype() abort
   return ft
 endfunction
 
-function! s:get_candidate(fts, lead) abort
+function! s:get_candidate(fts, lead, mode) abort
   let fts = a:fts
   let filter = ''
-  if getcmdwintype() ==# ''
-    let prefix = search('[^ \t]', 'wn') ? 'snip' : 'base'
+  if a:mode =~# '[vV]'
+    let prefix = 'wrap'
   else
-    let prefix = 'base'
-    for line in getbufline(bufnr('#'), 1, '$')
-      if match(line, '[^ \t]') != -1
-        let prefix = 'snip'
-        break
-      endif
-    endfor
+    if getcmdwintype() ==# ''
+      let prefix = search('[^ \t]', 'wn') ? 'snip' : 'base'
+    else
+      let prefix = 'base'
+      for line in getbufline(bufnr('#'), 1, '$')
+        if match(line, '[^ \t]') != -1
+          let prefix = 'snip'
+          break
+        endif
+      endfor
+    endif
   endif
   try
     let ft = s:get_filetype()
@@ -129,12 +135,20 @@ function! s:get_candidate(fts, lead) abort
   return candidate
 endfunction
 
+function! sonictemplate#complete_wrap(lead, cmdline, curpos) abort
+  return s:get_candidate([s:get_raw_filetype(), s:get_filetype(), sonictemplate#get_filetype()], a:lead, 'v')
+endfunction
+
 function! sonictemplate#complete(lead, cmdline, curpos) abort
-  return s:get_candidate([s:get_raw_filetype(), s:get_filetype(), sonictemplate#get_filetype()], a:lead)
+  return s:get_candidate([s:get_raw_filetype(), s:get_filetype(), sonictemplate#get_filetype()], a:lead, '')
+endfunction
+
+function! sonictemplate#complete_intelligent_wrap(lead, cmdline, curpos) abort
+  return s:get_candidate([sonictemplate#get_filetype(), s:get_raw_filetype(), s:get_filetype()], a:lead, 'v')
 endfunction
 
 function! sonictemplate#complete_intelligent(lead, cmdline, curpos) abort
-  return s:get_candidate([sonictemplate#get_filetype(), s:get_raw_filetype(), s:get_filetype()], a:lead)
+  return s:get_candidate([sonictemplate#get_filetype(), s:get_raw_filetype(), s:get_filetype()], a:lead, '')
 endfunction
 
 function! s:setopt(k, v) abort
@@ -190,7 +204,7 @@ function! sonictemplate#apply(name, mode, ...) abort
   let name = matchstr(a:name, '\S\+')
   let buffer_is_not_empty = search('[^ \t]', 'wn')
   let fs = []
-  if a:mode ==# 'v'
+  if mode() =~# '[vV]'
     let prefix = 'wrap'
   else
     let prefix = s:getopt('prefix')

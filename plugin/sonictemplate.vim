@@ -24,27 +24,34 @@ exe 'command!' '-nargs=1' '-complete=customlist,sonictemplate#complete' get(g:, 
 
 nnoremap <plug>(sonictemplate) :call sonictemplate#select('n')<cr>
 inoremap <plug>(sonictemplate) <c-r>=sonictemplate#select('i')<cr>
+vnoremap <plug>(sonictemplate) :call sonictemplate#select('v')<cr>
 if !hasmapto('<plug>(sonictemplate)') && get(g:, 'sonictemplate_key', 1) != ''
   if empty(get(g:, 'sonictemplate_key'))
     nmap <unique> <c-y>t <plug>(sonictemplate)
     imap <unique> <expr> <c-y>t pumvisible()?'<c-e><plug>(sonictemplate)':'<plug>(sonictemplate)'
+    vmap <unique> <c-y>t <plug>(sonictemplate)
     nmap <unique> <c-y><c-t> <c-y>t
     imap <unique> <c-y><c-t> <c-y>t
+    vmap <unique> <c-y><c-t> <c-y>t
   else
     exe 'nmap' g:sonictemplate_key '<plug>(sonictemplate)'
     exe 'imap' g:sonictemplate_key '<plug>(sonictemplate)'
+    exe 'vmap' g:sonictemplate_key '<plug>(sonictemplate)'
   endif
 endif
 
 nnoremap <plug>(sonictemplate-intelligent) :call sonictemplate#select_intelligent('n')<cr>
 inoremap <plug>(sonictemplate-intelligent) <c-r>=sonictemplate#select_intelligent('i')<cr>
+vnoremap <plug>(sonictemplate-intelligent) <c-r>=sonictemplate#select_intelligent('v')<cr>
 if !hasmapto('<plug>(sonictemplate-intelligent)') && get(g:, 'sonictemplate_intelligent_key', 1) != ''
   if empty(get(g:, 'sonictemplate_intelligent_key'))
     nmap <unique> <c-y>T <plug>(sonictemplate-intelligent)
     imap <unique> <expr> <c-y>T pumvisible()?'<c-e><plug>(sonictemplate-intelligent)':'<plug>(sonictemplate-intelligent)'
+    vmap <unique> <c-y>T <plug>(sonictemplate-intelligent)
   else
     exe 'nmap' g:sonictemplate_intelligent_key '<plug>(sonictemplate-intelligent)'
     exe 'imap' g:sonictemplate_intelligent_key '<plug>(sonictemplate-intelligent)'
+    exe 'vmap' g:sonictemplate_intelligent_key '<plug>(sonictemplate-intelligent)'
   endif
 endif
 

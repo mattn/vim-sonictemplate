@@ -3,5 +3,5 @@ function! s:handler(item) abort
 endfunction
 
 function! fz#sonictemplate#run() abort
-  call fz#run({'type': 'list', 'list': sonictemplate#complete("", "", 0), 'accept': function('s:handler')})
+  call fz#run({'type': 'list', 'list': sonictemplate#complete('', '', 0), 'accept': function('s:handler')})
 endfunction

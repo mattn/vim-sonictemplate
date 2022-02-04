@@ -8,7 +8,7 @@ set cpo&vim
 
 let s:tmpldir = []
 if exists('g:sonictemplate_vim_template_dir')
-  if type(g:sonictemplate_vim_template_dir) == 3
+  if type(g:sonictemplate_vim_template_dir) ==# 3
     let s:tmpldir += map(g:sonictemplate_vim_template_dir, 'fnamemodify(expand(v:val), ":p")')
   else
     call add(s:tmpldir, fnamemodify(expand(g:sonictemplate_vim_template_dir), ':p'))
@@ -18,7 +18,7 @@ call add(s:tmpldir, expand('<sfile>:p:h:h') . '/template/')
 
 function! sonictemplate#select(mode) abort
   let name = input(':Template ', '', 'customlist,sonictemplate#complete')
-  if name == ''
+  if name ==# ''
     return ''
   endif
   call sonictemplate#apply(name, a:mode, 0)
@@ -27,7 +27,7 @@ endfunction
 
 function! sonictemplate#select_intelligent(mode) abort
   let name = input(':Template ', '', 'customlist,sonictemplate#complete_intelligent')
-  if name == ''
+  if name ==# ''
     return ''
   endif
   call sonictemplate#apply(name, a:mode, 1)
@@ -36,7 +36,7 @@ endfunction
 
 function! sonictemplate#get_filetype() abort
   let c = col('.')
-  if c == col('$')
+  if c ==# col('$')
     let c -= 1
   endif
   let ft = tolower(synIDattr(synID(line('.'), c, 1), 'name'))
@@ -91,7 +91,7 @@ function! s:get_candidate(fts, lead) abort
       let tmp += map(split(globpath(join([tmpldir, ft], '/'), 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
     endfor
     let l:ft = s:get_raw_filetype()
-    if l:ft == '' || l:ft == 'text'
+    if l:ft ==# '' || l:ft ==# 'text'
       for tmpldir in s:tmpldir
         let tmp += sort(map(split(globpath(join([tmpldir, '_'], '/'), 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'))
       endfor
@@ -107,18 +107,18 @@ function! s:get_candidate(fts, lead) abort
   endfor
   let candidate = []
   for c in tmp
-    if index(candidate, c) == -1
+    if index(candidate, c) ==# -1
       call add(candidate, c)
     endif
   endfor
-  if filter == ''
+  if filter ==# ''
     let filter = s:getopt('filter')
   endif
-  if filter != ''
+  if filter !=# ''
     let [lhs, rhs] = [[], []]
     for c in candidate
       let ms = matchstr(c, filter)
-      if ms != '' && matchstr(c, ms) == 0
+      if ms !=# '' && matchstr(c, ms) ==# 0
         call add(lhs, c)
       else
         call add(rhs, c)
@@ -163,7 +163,7 @@ endfunction
 
 function! sonictemplate#getvar(name) abort
   let ft = s:get_filetype()
-  let ft = ft != '' ? ft : '_'
+  let ft = ft !=# '' ? ft : '_'
   if !has_key(s:vars, ft)
     return ''
   endif
@@ -190,12 +190,16 @@ function! sonictemplate#apply(name, mode, ...) abort
   let name = matchstr(a:name, '\S\+')
   let buffer_is_not_empty = search('[^ \t]', 'wn')
   let fs = []
-  let prefix = s:getopt('prefix')
-  if prefix == ''
-    let prefix = search('[^ \t]', 'wn') ? 'snip' : 'base'
+  if a:mode ==# 'v'
+    let prefix = 'wrap'
+  else
+    let prefix = s:getopt('prefix')
+    if prefix ==# ''
+      let prefix = search('[^ \t]', 'wn') ? 'snip' : 'base'
+    endif
   endif
   let ft = s:getopt('filetype')
-  if ft == ''
+  if ft ==# ''
     if get(a:000, 0, 0)
       let fts = [sonictemplate#get_filetype(), s:get_raw_filetype(), s:get_filetype(), '_']
     else
@@ -214,7 +218,7 @@ function! sonictemplate#apply(name, mode, ...) abort
       endfor
     endfor
   endif
-  if len(fs) == 0
+  if len(fs) ==# 0
     for tmpldir in s:tmpldir
       for ft in fts
         if len(ft) > 0
@@ -223,7 +227,7 @@ function! sonictemplate#apply(name, mode, ...) abort
       endfor
     endfor
   endif
-  if len(fs) == 0
+  if len(fs) ==# 0
     echomsg 'Template '.name.' is not exists.'
     return
   endif
@@ -233,7 +237,7 @@ function! sonictemplate#apply(name, mode, ...) abort
     return
   endif
   let ft = s:get_filetype()
-  let ft = ft != '' ? ft : '_'
+  let ft = ft !=# '' ? ft : '_'
   let c = join(readfile(f), "\n")
   let c = substitute(c, '{{_dir_}}', s:dir(), 'g')
   let c = substitute(c, '{{_name_}}', s:name('Main'), 'g')
@@ -246,26 +250,26 @@ function! sonictemplate#apply(name, mode, ...) abort
   let vars = []
   while 1
     let match = matchstr(tmp, mx)
-    if len(match) == 0
+    if len(match) ==# 0
       break
     endif
     let var = substitute(match, mx, '\1', 'ig')
-    if index(vars, var) == -1
+    if index(vars, var) ==# -1
       call add(vars, var)
     endif
     let tmp = tmp[stridx(tmp, match) + len(match):]
   endwhile
-  let gvars = has_key(g:, 'sonictemplate_vim_vars') && type(g:sonictemplate_vim_vars) == 4 ? g:sonictemplate_vim_vars : {}
+  let gvars = has_key(g:, 'sonictemplate_vim_vars') && type(g:sonictemplate_vim_vars) ==# 4 ? g:sonictemplate_vim_vars : {}
   for var in vars
     if exists('V')
       unlet V
     endif
-    if has_key(gvars, s:get_raw_filetype()) && type(gvars[s:get_raw_filetype()]) == 4 && has_key(gvars[s:get_raw_filetype()], var)
+    if has_key(gvars, s:get_raw_filetype()) && type(gvars[s:get_raw_filetype()]) ==# 4 && has_key(gvars[s:get_raw_filetype()], var)
       let V = gvars[s:get_raw_filetype()][var]
-      if type(V) == 1 | let val = V | else | let val = string(V) | endif
-    elseif has_key(gvars, '_') && type(gvars['_']) == 4 && has_key(gvars['_'], var)
+      if type(V) ==# 1 | let val = V | else | let val = string(V) | endif
+    elseif has_key(gvars, '_') && type(gvars['_']) ==# 4 && has_key(gvars['_'], var)
       let V = gvars['_'][var]
-      if type(V) == 1 | let val = V | else | let val = string(V) | endif
+      if type(V) ==# 1 | let val = V | else | let val = string(V) | endif
     else
       let val = input(var . ': ')
     endif
@@ -275,7 +279,7 @@ function! sonictemplate#apply(name, mode, ...) abort
   let mx = '{{_define_:\([^:]\+\):\(.\{-}\)}}\s*'
   while 1
     let match = matchstr(c, mx)
-    if len(match) == 0
+    if len(match) ==# 0
       break
     endif
     let var = substitute(match, mx, '\1', 'ig')
@@ -292,7 +296,7 @@ function! sonictemplate#apply(name, mode, ...) abort
   endif
   let mx = '{{_filter_:\([a-zA-Z0-9_-]\+\)}}\s*'
   let bf = matchstr(c, mx)
-  if len(bf) > 0
+  if len(bf) ># 0
     call s:setopt('filter', substitute(bf, mx, '\1', ''))
     let c = substitute(c, mx, '', 'g')
   endif
@@ -327,18 +331,18 @@ function! sonictemplate#apply(name, mode, ...) abort
         let c = lhs . c . rhs
       endif
       let c = indent . substitute(substitute(c, "\n", "\n".indent, 'g'), "\n".indent."\n", "\n\n", 'g')
-      if len(indent) && (&expandtab || (&shiftwidth && &tabstop != &shiftwidth) || indent =~ '^ \+$')
+      if len(indent) && (&expandtab || (&shiftwidth && &tabstop !=# &shiftwidth) || indent =~# '^ \+$')
         let c = substitute(c, "\t", repeat(' ', min([len(indent), shiftwidth()])), 'g')
-      elseif &expandtab || (&shiftwidth && &tabstop != &shiftwidth)
+      elseif &expandtab || (&shiftwidth && &tabstop !=# &shiftwidth)
         let c = substitute(c, "\t", repeat(' ', shiftwidth()), 'g')
       endif
-      if line('.') < line('$')
+      if line('.') <# line('$')
         silent! normal! "_dd
       endif
       silent! put! =c
     endif
   endif
-  if stridx(c, '{{_cursor_}}') != -1
+  if stridx(c, '{{_cursor_}}') !=# -1
     silent! call search('\zs{{_cursor_}}', 'w')
     silent! foldopen
     let curpos = getpos('.')
@@ -360,7 +364,7 @@ function! sonictemplate#postfix() abort
   for k in keys(s:pat[s:get_raw_filetype()])
     let pos = matchstrpos(line, k)
     let m = matchstr(line, k)
-    if len(m) > 0
+    if len(m) ># 0
       let ml = matchlist(line, k)
       let line = strpart(line, 0, pos[1])
       let c = join(s:pat[s:get_raw_filetype()][k], "\n")
@@ -371,13 +375,13 @@ function! sonictemplate#postfix() abort
       let c .= rest
       if c =~# "\n"
         let c = indent . substitute(substitute(c, "\n", "\n".indent, 'g'), "\n".indent."\n", "\n\n", 'g')
-        if len(indent) && (&expandtab || (&shiftwidth && &tabstop != &shiftwidth) || indent =~ '^ \+$')
+        if len(indent) && (&expandtab || (&shiftwidth && &tabstop !=# &shiftwidth) || indent =~# '^ \+$')
           let c = substitute(c, "\t", repeat(' ', min([len(indent), shiftwidth()])), 'g')
-        elseif &expandtab || (&shiftwidth && &tabstop != &shiftwidth)
+        elseif &expandtab || (&shiftwidth && &tabstop !=# &shiftwidth)
           let c = substitute(c, "\t", repeat(' ', shiftwidth()), 'g')
         endif
         call setline('.', line)
-        if line('.') < line('$')
+        if line('.') <# line('$')
           silent! normal! dd
         endif
         silent! put! =c
@@ -388,7 +392,7 @@ function! sonictemplate#postfix() abort
         noautocmd silent! exe "normal! a\<c-r>=c\<cr>"
         let &indentexpr = oldindentexpr
       endif
-      if stridx(c, '{{_cursor_}}') != -1
+      if stridx(c, '{{_cursor_}}') !=# -1
         silent! call search('\zs{{_cursor_}}', 'w')
         silent! foldopen
         let curpos = getpos('.')
@@ -410,7 +414,7 @@ function! sonictemplate#load_postfix() abort
   for tmpldir in reverse(s:tmpldir)
     let tmp += split(globpath(join([tmpldir, ft], '/'), 'pattern.stpl'), "\n")
   endfor
-  if len(tmp) == 0
+  if len(tmp) ==# 0
     return
   endif
   let s:pat[ft] = {}
@@ -418,10 +422,10 @@ function! sonictemplate#load_postfix() abort
     let k = ''
     let l = []
     for line in add(readfile(f), '__END__')
-      if line == ''
+      if line ==# ''
         continue
       elseif line !~# '^\t'
-        if k != ''
+        if k !=# ''
           let s:pat[ft][k] = l
         endif
         let k = line

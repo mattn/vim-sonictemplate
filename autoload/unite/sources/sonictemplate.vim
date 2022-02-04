@@ -18,11 +18,11 @@ let s:source = {
 function! s:source.gather_candidates(args, context) abort "{{{
   call unite#print_message('[sonictemplate]')
   return s:uniq(map(
-\     sonictemplate#complete("", "", 0), '{
+\     sonictemplate#complete('', '', 0), '{
 \     "word"   : s:to_template_name(v:val),
 \     "source" : s:source.name,
 \     "kind"   : s:source.name,
-\     "action__mode" : len(a:args) > 0 ? args[0] : "n",
+\     "action__mode" : len(a:args) > 0 ? a:args[0] : "n",
 \     "action__name" : s:to_template_name(v:val),
 \     "action__path" : v:val,
 \   }'

@@ -14,19 +14,19 @@ function! sonictemplate#lang#html#guess() abort
   let content = join(lines, "\n")
   let tag = matchstr(content, '^<\zs[^> ]\+\ze.*')
   let inner = substitute(matchstr(content, '^<[^>]\+>\zs.*\ze</[^>]\+>$'), '[ \t\r\n]', '', 'g')
-  if tag == 'script'
+  if tag ==# 'script'
     return {
     \ 'filetype': 'javascript',
     \ 'prefix': len(inner) > 0 ? 'snip' : 'base',
     \}
   endif
-  if tag == 'style'
+  if tag ==# 'style'
     return {
     \ 'filetype': 'css',
     \ 'prefix': len(inner) > 0 ? 'snip' : 'base',
     \}
   endif
-  if tag == 'head'
+  if tag ==# 'head'
     return {
     \ 'filter': 'link\|meta'
     \}

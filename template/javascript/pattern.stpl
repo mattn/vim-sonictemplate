@@ -1,6 +1,12 @@
 \(\S\+\)\.var$
 	var {{$1}} = {{_cursor_}};
 
+\(\S\+\)\.const$
+	const {{$1}} = {{_cursor_}};
+
+\(\S\+\)\.let$
+	let {{$1}} = {{_cursor_}};
+
 ^\s*\zs\(\S.*\)\.throw$
 	throw {{$1}};
 
@@ -9,3 +15,8 @@
 		{{_cursor_}}
 	}
 
+\(\S\+\)\.require$
+	const {{_cursor_}} = require('{{$1}}');
+
+\(\S\+\)\.import$
+	import {{_cursor_}} from '{{$1}}';

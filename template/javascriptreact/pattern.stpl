@@ -1,0 +1,8 @@
+\(\S\+\)\.const$
+	const {{$1}} = {{_cursor_}};
+
+\(\S\+\)\.let$
+	let {{$1}} = {{_cursor_}};
+
+\(\S\+\)\.import$
+	import {{_cursor_}} from '{{$1}}';

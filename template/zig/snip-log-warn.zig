@@ -1,1 +1,1 @@
-std.log.warn("{}", .{{{_cursor_}}})
+std.log.warn("{}", .{{{_cursor_}}});

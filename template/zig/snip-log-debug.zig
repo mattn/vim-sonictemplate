@@ -1,1 +1,1 @@
-std.log.debug("{}", .{{{_cursor_}}})
+std.log.debug("{}", .{{{_cursor_}}});

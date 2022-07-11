@@ -1,1 +1,1 @@
-std.log.info("{}", .{{{_cursor_}}})
+std.log.info("{}", .{{{_cursor_}}});

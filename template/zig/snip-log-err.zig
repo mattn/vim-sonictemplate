@@ -1,1 +1,1 @@
-std.log.err("{}", .{{{_cursor_}}})
+std.log.err("{}", .{{{_cursor_}}});

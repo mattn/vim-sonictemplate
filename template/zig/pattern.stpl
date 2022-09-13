@@ -1,0 +1,16 @@
+\(\S\+\)\.warn$
+	std.log.warn("{}", .{{{$1}}});
+	{{_cursor_}}
+
+\(\S\+\)\.info$
+	std.log.info("{}", .{{{$1}}});
+	{{_cursor_}}
+
+\(\S\+\)\.warns$
+	std.log.warn("{s}", .{{{$1}}});
+	{{_cursor_}}
+
+\(\S\+\)\.infos$
+	std.log.info("{s}", .{{{$1}}});
+	{{_cursor_}}
+

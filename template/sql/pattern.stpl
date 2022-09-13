@@ -1,0 +1,3 @@
+^from \(\S\+\)$
+	SELECT {{_cursor_}} FROM {{$1}}
+

@@ -246,7 +246,8 @@ Note that I'm using pathogen-vim.
 
   |{{_input_:var}}| : ask the value of "var".
 
-    You'll be asked "var: " in prompt.
+    You'll be asked "var: " in prompt. Default value could be pass via
+    |{{_input_:var:default}}|.
 
   |{{_expr_:xxx}}|  : expression in vimscript.
 

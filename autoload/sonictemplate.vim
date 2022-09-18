@@ -289,17 +289,19 @@ function! sonictemplate#apply(name, mode, ...) abort
     if exists('V')
       unlet V
     endif
-    if has_key(gvars, s:get_raw_filetype()) && type(gvars[s:get_raw_filetype()]) ==# 4 && has_key(gvars[s:get_raw_filetype()], var)
-      let V = gvars[s:get_raw_filetype()][var]
+    let tok = split(var, '^[^:]\+\zs:', 1)
+    let [name, defval] = len(tok) ==# 2 ? [tok[0], tok[1]] : [tok[0], '']
+    if has_key(gvars, s:get_raw_filetype()) && type(gvars[s:get_raw_filetype()]) ==# 4 && has_key(gvars[s:get_raw_filetype()], name)
+      let V = gvars[s:get_raw_filetype()][name]
       if type(V) ==# 1 | let val = V | else | let val = string(V) | endif
-    elseif has_key(gvars, '_') && type(gvars['_']) ==# 4 && has_key(gvars['_'], var)
-      let V = gvars['_'][var]
+    elseif has_key(gvars, '_') && type(gvars['_']) ==# 4 && has_key(gvars['_'], name)
+      let V = gvars['_'][name]
       if type(V) ==# 1 | let val = V | else | let val = string(V) | endif
     else
-      let val = input(var . ': ')
+      let val = input(name . ': ', defval)
     endif
-    let c = substitute(c, '\V{{\(_input_\|_var_\):'.var.'}}', '\=val', 'g')
-    let s:vars[ft][var] = val
+    let c = substitute(c, '\V{{\(_input_\|_var_\):'.name.'\(:\[^}]\+\)\{-}}}', '\=val', 'g')
+    let s:vars[ft][name] = val
   endfor
   let mx = '{{_define_:\([^:]\+\):\(.\{-}\)}}\s*'
   while 1

@@ -41,6 +41,10 @@ func main() {
 		log.Fatal(err)
 	}
 
+	_, err = db.NewTruncateTable().Model((*User)(nil)).Exec(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
 	users := []User{
 		{Name: "John", Age: 20},
 		{Name: "Mike", Age: 25},
@@ -52,7 +56,7 @@ func main() {
 	}
 
 	users = nil
-	err = db.NewSelect().Model((*User)(nil)).Scan(context.Background(), &users)
+	err = db.NewSelect().Model((*User)(nil)).OrderExpr("id ASC").Scan(context.Background(), &users)
 	if err != nil {
 		log.Fatal(err)
 	}

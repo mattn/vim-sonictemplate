@@ -17,7 +17,7 @@ endif
 call add(s:tmpldir, expand('<sfile>:p:h:h') . '/template/')
 
 function! sonictemplate#select(mode) abort
-  let fn = a:mode =~# '[vV]' ? 'customlist,sonictemplate#complete_wrap' : 'customlist,sonictemplate#complete'
+  let l:fn = a:mode =~# '[vV]' ? 'customlist,sonictemplate#complete_wrap' : 'customlist,sonictemplate#complete'
   let name = input(':Template ', '', fn)
   if name ==# ''
     return ''
@@ -52,6 +52,29 @@ function! sonictemplate#get_filetype() abort
     let ft = 'xml'
   endif
   return ft
+endfunction
+
+function! s:load_meta(path) abort
+  let l:path = a:path . '/meta.json'
+  return filereadable(l:path) ? json_decode(join(readfile(l:path), "\n")) : {}
+endfunction
+
+function! s:sort(meta, lhs, rhs) abort
+  if !empty(a:meta) && has_key(a:meta, 'prefer-base')
+    let [l:prefer, l:lhso, l:rhso] = [a:meta['prefer-base'], 9999, 9999]
+    for l:i in range(len(l:prefer))
+      if l:lhso == 9999 && a:lhs =~ l:prefer[l:i]
+        let l:lhso = l:i
+      endif
+      if l:rhso == 9999 && a:rhs =~ l:prefer[l:i]
+        let l:rhso = l:i
+      endif
+    endfor
+    if l:lhso != l:rhso
+      return l:lhso ># l:rhso ? 1 : -1
+    endif
+  endif
+  return a:lhs ==# a:rhs ? 0 : a:lhs ># a:rhs ? 1 : -1
 endfunction
 
 function! s:get_candidate(fts, lead, mode) abort
@@ -94,22 +117,30 @@ function! s:get_candidate(fts, lead, mode) abort
   let tmp = []
   if prefix ==# 'base'
     for tmpldir in s:tmpldir
-      let tmp += map(split(globpath(join([tmpldir, ft], '/'), 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]')
+      let l:path = join([tmpldir, ft], '/')
+      let l:meta = s:load_meta(l:path)
+      let tmp += sort(map(split(globpath(join([tmpldir, ft], '/'), 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'), function('s:sort', [l:meta]))
     endfor
     let l:ft = s:get_raw_filetype()
     if l:ft ==# '' || l:ft ==# 'text'
       for tmpldir in s:tmpldir
-        let tmp += sort(map(split(globpath(join([tmpldir, '_'], '/'), 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'))
+        let l:path = join([tmpldir, '_'], '/')
+        let l:meta = s:load_meta(l:path)
+        let tmp += sort(map(split(globpath(l:path, 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'), function('s:sort', [l:meta]))
       endfor
     endif
   endif
   for tmpldir in s:tmpldir
     for ft in fts
-      let tmp += sort(map(split(globpath(join([tmpldir, ft], '/'), prefix . '-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'))
+      let l:path = join([tmpldir, ft], '/')
+      let l:meta = s:load_meta(l:path)
+      let tmp += sort(map(split(globpath(l:path, prefix . '-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'), function('s:sort', [l:meta]))
     endfor
   endfor
   for tmpldir in s:tmpldir
-    let tmp += sort(map(split(globpath(join([tmpldir, '_'], '/'), prefix . '-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'))
+    let l:path = join([tmpldir, '_'], '/')
+    let l:meta = s:load_meta(l:path)
+    let tmp += sort(map(split(globpath(l:path, prefix . '-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'), function('s:sort', [l:meta]))
   endfor
   let candidate = []
   for c in tmp
@@ -225,18 +256,22 @@ function! sonictemplate#apply(name, mode, ...) abort
   if prefix ==# 'base'
     for tmpldir in s:tmpldir
       for ft in fts
-        let fs += sort(split(globpath(join([tmpldir, ft], '/'), 'file-' . name . '.*'), "\n"))
+        let l:path = join([tmpldir, ft], '/')
+        let l:meta = s:load_meta(l:path)
+        let fs += sort(split(globpath(l:path, 'file-' . name . '.*'), "\n"), function('s:sort', [l:meta]))
       endfor
-      for ft in fts
-        let fs += sort(split(globpath(join([tmpldir, '_'], '/'), 'file-' . name . '.*'), "\n"))
-      endfor
+      let l:path = join([tmpldir, '_'], '/')
+      let l:meta = s:load_meta(l:path)
+      let fs += sort(split(globpath(l:path, 'file-' . name . '.*'), "\n"), function('s:sort', [l:meta]))
     endfor
   endif
   if len(fs) ==# 0
     for tmpldir in s:tmpldir
       for ft in fts
         if len(ft) > 0
-          let fs += sort(split(globpath(join([tmpldir, ft], '/'), prefix . '-' . name . '.*'), "\n"))
+          let l:path = join([tmpldir, ft], '/')
+          let l:meta = s:load_meta(l:path)
+          let fs += sort(split(globpath(l:path, prefix . '-' . name . '.*'), "\n"), function('s:sort', [l:meta]))
         endif
       endfor
     endfor

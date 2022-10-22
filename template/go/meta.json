@@ -1,0 +1,3 @@
+{
+    "prefer-base": ["main", "package", "test", "bench"]
+}

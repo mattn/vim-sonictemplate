@@ -31,17 +31,17 @@ endfunction "}}}
 
 " local functions {{{
 function! s:uniq(candidates) abort
-  let has = {}
-  let uniq_list = []
-  for candidate in a:candidates
-    let name = candidate.action__name
-    if exists(printf("has['%s']", name))
+  let l:has = {}
+  let l:uniq_list = []
+  for l:candidate in a:candidates
+    let l:name = l:candidate.action__name
+    if exists(printf("has['%s']", l:name))
       continue
     endif
-    let has[name] = 1
-    call add(uniq_list, candidate)
+    let l:has[l:name] = 1
+    call add(l:uniq_list, l:candidate)
   endfor
-  return uniq_list
+  return l:uniq_list
 endfunction
 
 function! s:to_template_name(path) abort

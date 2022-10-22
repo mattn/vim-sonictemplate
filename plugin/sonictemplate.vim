@@ -12,13 +12,13 @@
 "
 "   Or type <c-y> + t
 
-if &cp || (exists('g:loaded_sonictemplate_vim') && g:loaded_sonictemplate_vim)
+if &compatible || (exists('g:loaded_sonictemplate_vim') && g:loaded_sonictemplate_vim)
   finish
 endif
 let g:loaded_sonictemplate_vim = 1
 
-let s:save_cpo = &cpo
-set cpo&vim
+let s:save_cpo = &cpoptions
+set cpoptions&vim
 
 exe 'command!' '-nargs=1' '-complete=customlist,sonictemplate#complete' get(g:, 'sonictemplate_commandname', 'Template') 'call sonictemplate#apply(<f-args>, "n")'
 
@@ -64,7 +64,7 @@ if !hasmapto('<plug>(sonictemplate-postfix)') && get(g:, 'sonictemplate_postfix_
   endif
 endif
 
-let &cpo = s:save_cpo
+let &cpoptions = s:save_cpo
 unlet s:save_cpo
 
 " vim:set et:

@@ -3,8 +3,8 @@
 " Version: 0.1.0
 " License: BSD style license
 
-let s:save_cpo = &cpo
-set cpo&vim
+let s:save_cpo = &cpoptions
+set cpoptions&vim
 
 function! unite#sources#sonictemplate#define() abort "{{{
   return s:source
@@ -49,6 +49,6 @@ function! s:to_template_name(path) abort
 endfunction
 " }}}
 
-let &cpo = s:save_cpo
+let &cpoptions = s:save_cpo
 unlet s:save_cpo
 " __END__

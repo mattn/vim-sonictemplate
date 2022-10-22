@@ -4,7 +4,7 @@ function! sonictemplate#lang#java#util(name) abort
     let l:fn = l:fn[len(s:project_root())+1 :]
     let l:fn = substitute(l:fn, '[\\/]', '.', 'g')
     let l:fn = substitute(l:fn, '^\(src\.main\.java\.\|src\.\)', '', '')
-    if fn !=# ''
+    if l:fn !=# ''
       return 'package ' . l:fn . ';'
     endif
   endif

@@ -3,8 +3,8 @@
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 21-Jan-2020.
 
-let s:save_cpo = &cpo
-set cpo&vim
+let s:save_cpo = &cpoptions
+set cpoptions&vim
 
 let s:tmpldir = []
 if exists('g:sonictemplate_vim_template_dir')
@@ -18,7 +18,7 @@ call add(s:tmpldir, expand('<sfile>:p:h:h') . '/template/')
 
 function! sonictemplate#select(mode) abort
   let l:fn = a:mode =~# '[vV]' ? 'customlist,sonictemplate#complete_wrap' : 'customlist,sonictemplate#complete'
-  let l:name = input(':Template ', '', fn)
+  let l:name = input(':Template ', '', l:fn)
   if l:name ==# ''
     return ''
   endif
@@ -125,7 +125,7 @@ function! s:get_candidate(fts, lead, mode) abort
     let l:ft = s:get_raw_filetype()
     if l:ft ==# '' || l:ft ==# 'text'
       for l:tmpldir in s:tmpldir
-        let l:path = join([tmpldir, '_'], '/')
+        let l:path = join([l:tmpldir, '_'], '/')
         let l:prefer = s:load_meta(l:path, 'prefer-file', [])
         let l:tmp += sort(map(split(globpath(l:path, 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'), function('s:sort', [l:prefer]))
       endfor
@@ -204,7 +204,7 @@ function! s:get_filetype() abort
 endfunction
 
 function! s:get_raw_filetype() abort
-  return getcmdwintype() ==# '' ? &ft : getbufvar('#', '&ft')
+  return getcmdwintype() ==# '' ? &filetype : getbufvar('#', '&filetype')
 endfunction
 
 function! sonictemplate#getvar(name) abort
@@ -500,7 +500,7 @@ function! sonictemplate#load_postfix() abort
   endfor
 endfunction
 
-let &cpo = s:save_cpo
+let &cpoptions = s:save_cpo
 unlet s:save_cpo
 
 " vim:set et:

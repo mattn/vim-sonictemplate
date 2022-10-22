@@ -54,7 +54,7 @@ function! sonictemplate#get_filetype() abort
   return ft
 endfunction
 
-function! s:load_prefer(path, type) abort
+function! s:load_meta(path, type) abort
   let l:path = a:path . '/meta.json'
   let l:meta = filereadable(l:path) ? json_decode(join(readfile(l:path), "\n")) : {}
   return has_key(l:meta, a:type) ? l:meta[a:type] : []
@@ -119,14 +119,14 @@ function! s:get_candidate(fts, lead, mode) abort
   if prefix ==# 'base'
     for tmpldir in s:tmpldir
       let l:path = join([tmpldir, ft], '/')
-      let l:prefer = s:load_prefer(l:path, 'prefer-file')
+      let l:prefer = s:load_meta(l:path, 'prefer-file')
       let tmp += sort(map(split(globpath(join([tmpldir, ft], '/'), 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'), function('s:sort', [l:prefer]))
     endfor
     let l:ft = s:get_raw_filetype()
     if l:ft ==# '' || l:ft ==# 'text'
       for tmpldir in s:tmpldir
         let l:path = join([tmpldir, '_'], '/')
-        let l:prefer = s:load_prefer(l:path, 'prefer-file')
+        let l:prefer = s:load_meta(l:path, 'prefer-file')
         let tmp += sort(map(split(globpath(l:path, 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'), function('s:sort', [l:prefer]))
       endfor
     endif
@@ -134,13 +134,13 @@ function! s:get_candidate(fts, lead, mode) abort
   for tmpldir in s:tmpldir
     for ft in fts
       let l:path = join([tmpldir, ft], '/')
-      let l:prefer = s:load_prefer(l:path, 'prefer-' . prefix)
+      let l:prefer = s:load_meta(l:path, 'prefer-' . prefix)
       let tmp += sort(map(split(globpath(l:path, prefix . '-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'), function('s:sort', [l:prefer]))
     endfor
   endfor
   for tmpldir in s:tmpldir
     let l:path = join([tmpldir, '_'], '/')
-    let l:prefer = s:load_prefer(l:path, 'prefer-' . prefix)
+    let l:prefer = s:load_meta(l:path, 'prefer-' . prefix)
     let tmp += sort(map(split(globpath(l:path, prefix . '-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'), function('s:sort', [l:prefer]))
   endfor
   let candidate = []
@@ -258,11 +258,11 @@ function! sonictemplate#apply(name, mode, ...) abort
     for tmpldir in s:tmpldir
       for ft in fts
         let l:path = join([tmpldir, ft], '/')
-        let l:prefer = s:load_prefer(l:path, 'prefer-file')
+        let l:prefer = s:load_meta(l:path, 'prefer-file')
         let fs += sort(split(globpath(l:path, 'file-' . name . '.*'), "\n"), function('s:sort', [l:prefer]))
       endfor
       let l:path = join([tmpldir, '_'], '/')
-      let l:prefer = s:load_prefer(l:path, 'prefer-file')
+      let l:prefer = s:load_meta(l:path, 'prefer-file')
       let fs += sort(split(globpath(l:path, 'file-' . name . '.*'), "\n"), function('s:sort', [l:prefer]))
     endfor
   endif
@@ -271,7 +271,7 @@ function! sonictemplate#apply(name, mode, ...) abort
       for ft in fts
         if len(ft) > 0
           let l:path = join([tmpldir, ft], '/')
-          let l:prefer = s:load_prefer(l:path, 'prefer-' . prefix)
+          let l:prefer = s:load_meta(l:path, 'prefer-' . prefix)
           let fs += sort(split(globpath(l:path, prefix . '-' . name . '.*'), "\n"), function('s:sort', [l:prefer]))
         endif
       endfor

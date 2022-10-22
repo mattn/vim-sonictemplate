@@ -1,2 +1,6 @@
 .gitignore
 doc/tags
+template/go/*.sqlite
+template/go/go.mod
+template/go/go.sum
+template/perl/Foo.pm

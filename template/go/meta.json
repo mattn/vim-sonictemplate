@@ -1,3 +1,3 @@
 {
-    "prefer-base": ["main", "package", "test", "bench"]
+    "prefer-base": ["main", "script", "package", "test", "bench"]
 }

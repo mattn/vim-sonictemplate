@@ -21,6 +21,9 @@ socket_perror(const char *s) {
 # include <netinet/in.h>
 # include <netdb.h>
 # include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <string.h>
 #define closesocket(fd) close(fd)
 #define socket_perror(s) perror(s)
 #endif

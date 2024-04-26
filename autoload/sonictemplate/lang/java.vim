@@ -3,7 +3,7 @@ function! sonictemplate#lang#java#util(name) abort
     let l:fn = expand('%:p:h')
     let l:fn = l:fn[len(s:project_root())+1 :]
     let l:fn = substitute(l:fn, '[\\/]', '.', 'g')
-    let l:fn = substitute(l:fn, '^\(src\.main\.java\.\|src\.\)', '', '')
+    let l:fn = substitute(l:fn, '^\(src\.main\.java\.\|src\.test\.java\.\|src\.\)', '', '')
     if l:fn !=# ''
       return 'package ' . l:fn . ';'
     endif

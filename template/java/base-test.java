@@ -1,8 +1,10 @@
 {{_lang_util_:package}}
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * {{_name_}}
@@ -13,11 +15,11 @@ public class {{_name_}} {
 		{{_cursor_}}
 	}
 
-	@Before
+	@BeforeEach
 	public void setup() {
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 	}
 }

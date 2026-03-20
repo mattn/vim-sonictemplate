@@ -1,14 +1,14 @@
 "=============================================================================
 " sonictemplate.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 21-Jan-2020.
+" Last Change: 20-Mar-2026.
 
 let s:save_cpo = &cpoptions
 set cpoptions&vim
 
 let s:tmpldir = []
 if exists('g:sonictemplate_vim_template_dir')
-  if type(g:sonictemplate_vim_template_dir) ==# 3
+  if type(g:sonictemplate_vim_template_dir) ==# v:t_list
     let s:tmpldir += map(g:sonictemplate_vim_template_dir, 'fnamemodify(expand(v:val), ":p")')
   else
     call add(s:tmpldir, fnamemodify(expand(g:sonictemplate_vim_template_dir), ':p'))
@@ -216,6 +216,26 @@ function! sonictemplate#getvar(name) abort
   return has_key(s:vars[l:ft], a:name) ? s:vars[l:ft][a:name] : ''
 endfunction
 
+function! s:adjust_indent(c, indent) abort
+  let l:c = a:indent . substitute(substitute(a:c, "\n", "\n" . a:indent, 'g'), "\n" . a:indent . "\n", "\n\n", 'g')
+  if len(a:indent) && (&expandtab || (&shiftwidth && &tabstop !=# &shiftwidth) || a:indent =~# '^ \+$')
+    let l:c = substitute(l:c, "\t", repeat(' ', min([len(a:indent), shiftwidth()])), 'g')
+  elseif &expandtab || (&shiftwidth && &tabstop !=# &shiftwidth)
+    let l:c = substitute(l:c, "\t", repeat(' ', shiftwidth()), 'g')
+  endif
+  return l:c
+endfunction
+
+function! s:jump_cursor(c) abort
+  if stridx(a:c, '{{_cursor_}}') !=# -1
+    silent! call search('\zs{{_cursor_}}', 'w')
+    silent! foldopen
+    let l:curpos = getpos('.')
+    silent! normal! "_da}
+    call setpos('.', l:curpos)
+  endif
+endfunction
+
 function! s:dir() abort
   let l:name = expand('%:p:h:t:r')
   if empty(l:name)
@@ -266,7 +286,7 @@ function! sonictemplate#apply(name, mode, ...) abort
       let l:fs += sort(split(globpath(l:path, 'file-' . l:name . '.*'), "\n"), function('s:sort', [l:prefer]))
     endfor
   endif
-  if len(l:fs) ==# 0
+  if empty(l:fs)
     for l:tmpldir in s:tmpldir
       for l:ft in l:fts
         if len(l:ft) > 0
@@ -277,7 +297,7 @@ function! sonictemplate#apply(name, mode, ...) abort
       endfor
     endfor
   endif
-  if len(l:fs) ==# 0
+  if empty(l:fs)
     echomsg 'Template ' . l:name . ' is not exists.'
     return
   endif
@@ -311,7 +331,7 @@ function! sonictemplate#apply(name, mode, ...) abort
   let l:vars = []
   while 1
     let l:match = matchstr(l:tmp, l:mx)
-    if len(l:match) ==# 0
+    if empty(l:match)
       break
     endif
     let l:var = substitute(l:match, l:mx, '\1', 'ig')
@@ -320,19 +340,19 @@ function! sonictemplate#apply(name, mode, ...) abort
     endif
     let l:tmp = l:tmp[stridx(l:tmp, l:match) + len(l:match):]
   endwhile
-  let l:gvars = has_key(g:, 'sonictemplate_vim_vars') && type(g:sonictemplate_vim_vars) ==# 4 ? g:sonictemplate_vim_vars : {}
+  let l:gvars = has_key(g:, 'sonictemplate_vim_vars') && type(g:sonictemplate_vim_vars) ==# v:t_dict ? g:sonictemplate_vim_vars : {}
   for l:var in l:vars
     if exists('l:V')
       unlet l:V
     endif
     let l:tok = split(l:var, '^[^:]\+\zs:', 1)
     let [l:name, l:defval] = len(l:tok) ==# 2 ? [l:tok[0], l:tok[1]] : [l:tok[0], '']
-    if has_key(l:gvars, s:get_raw_filetype()) && type(l:gvars[s:get_raw_filetype()]) ==# 4 && has_key(l:gvars[s:get_raw_filetype()], l:name)
+    if has_key(l:gvars, s:get_raw_filetype()) && type(l:gvars[s:get_raw_filetype()]) ==# v:t_dict && has_key(l:gvars[s:get_raw_filetype()], l:name)
       let l:V = l:gvars[s:get_raw_filetype()][l:name]
-      if type(l:V) ==# 1 | let l:val = l:V | else | let l:val = string(l:V) | endif
-    elseif has_key(l:gvars, '_') && type(l:gvars['_']) ==# 4 && has_key(l:gvars['_'], l:name)
+      if type(l:V) ==# v:t_string | let l:val = l:V | else | let l:val = string(l:V) | endif
+    elseif has_key(l:gvars, '_') && type(l:gvars['_']) ==# v:t_dict && has_key(l:gvars['_'], l:name)
       let l:V = l:gvars['_'][l:name]
-      if type(l:V) ==# 1 | let l:val = l:V | else | let l:val = string(l:V) | endif
+      if type(l:V) ==# v:t_string | let l:val = l:V | else | let l:val = string(l:V) | endif
     else
       let l:val = input(l:name . ': ', l:defval)
     endif
@@ -342,7 +362,7 @@ function! sonictemplate#apply(name, mode, ...) abort
   let l:mx = '{{_define_:\([^:]\+\):\(.\{-}\)}}\s*'
   while 1
     let l:match = matchstr(l:c, l:mx)
-    if len(l:match) ==# 0
+    if empty(l:match)
       break
     endif
     let l:var = substitute(l:match, l:mx, '\1', 'ig')
@@ -354,12 +374,12 @@ function! sonictemplate#apply(name, mode, ...) abort
   sandbox let l:c = substitute(l:c, '{{_if_:\(.\{-}\);\(.\{-}\)\(;\(.\{-}\)\)\{-}}}', '\=eval(submatch(1))?submatch(2):submatch(4)', 'g')
   sandbox let l:c = substitute(l:c, '{{_expr_:\(.\{-}\)}}', '\=eval(submatch(1))', 'g')
   silent! let l:c = substitute(l:c, '{{_lang_util_:\(.\{-}\)}}', '\=sonictemplate#lang#{l:ft}#util(submatch(1))', 'g')
-  if len(l:c) == 0
+  if empty(l:c)
     return
   endif
   let l:mx = '{{_filter_:\([a-zA-Z0-9_-]\+\)}}\s*'
   let l:bf = matchstr(l:c, l:mx)
-  if len(l:bf) ># 0
+  if !empty(l:bf)
     call s:setopt('filter', substitute(l:bf, l:mx, '\1', ''))
     let l:c = substitute(l:c, l:mx, '', 'g')
   endif
@@ -393,25 +413,14 @@ function! sonictemplate#apply(name, mode, ...) abort
         let l:lhs = l:lhs[len(l:indent):]
         let l:c = l:lhs . l:c . l:rhs
       endif
-      let l:c = l:indent . substitute(substitute(l:c, "\n", "\n" . l:indent, 'g'), "\n" . l:indent . "\n", "\n\n", 'g')
-      if len(l:indent) && (&expandtab || (&shiftwidth && &tabstop !=# &shiftwidth) || l:indent =~# '^ \+$')
-        let l:c = substitute(l:c, "\t", repeat(' ', min([len(l:indent), shiftwidth()])), 'g')
-      elseif &expandtab || (&shiftwidth && &tabstop !=# &shiftwidth)
-        let l:c = substitute(l:c, "\t", repeat(' ', shiftwidth()), 'g')
-      endif
+      let l:c = s:adjust_indent(l:c, l:indent)
       if line('.') <# line('$')
         silent! normal! "_dd
       endif
       silent! put! =l:c
     endif
   endif
-  if stridx(l:c, '{{_cursor_}}') !=# -1
-    silent! call search('\zs{{_cursor_}}', 'w')
-    silent! foldopen
-    let l:curpos = getpos('.')
-    silent! normal! "_da}
-    call setpos('.', l:curpos)
-  endif
+  call s:jump_cursor(l:c)
 endfunction
 
 let s:pat = {}
@@ -427,7 +436,7 @@ function! sonictemplate#postfix() abort
   for l:k in keys(s:pat[s:get_raw_filetype()])
     let l:pos = matchstrpos(l:line, l:k)
     let l:m = matchstr(l:line, l:k)
-    if len(l:m) ># 0
+    if !empty(l:m)
       let l:ml = matchlist(l:line, l:k)
       let l:line = strpart(l:line, 0, l:pos[1])
       let l:c = join(s:pat[s:get_raw_filetype()][l:k], "\n")
@@ -437,12 +446,7 @@ function! sonictemplate#postfix() abort
       let l:indent = matchstr(l:line, '^\(\s*\)')
       let l:c .= l:rest
       if l:c =~# "\n"
-        let l:c = l:indent . substitute(substitute(l:c, "\n", "\n" . l:indent, 'g'), "\n" . l:indent . "\n", "\n\n", 'g')
-        if len(l:indent) && (&expandtab || (&shiftwidth && &tabstop !=# &shiftwidth) || l:indent =~# '^ \+$')
-          let l:c = substitute(l:c, "\t", repeat(' ', min([len(l:indent), shiftwidth()])), 'g')
-        elseif &expandtab || (&shiftwidth && &tabstop !=# &shiftwidth)
-          let l:c = substitute(l:c, "\t", repeat(' ', shiftwidth()), 'g')
-        endif
+        let l:c = s:adjust_indent(l:c, l:indent)
         call setline('.', l:line)
         if line('.') <# line('$')
           silent! normal! dd
@@ -455,13 +459,7 @@ function! sonictemplate#postfix() abort
         noautocmd silent! exe "normal! a\<c-r>=c\<cr>"
         let &indentexpr = l:oldindentexpr
       endif
-      if stridx(l:c, '{{_cursor_}}') !=# -1
-        silent! call search('\zs{{_cursor_}}', 'w')
-        silent! foldopen
-        let l:curpos = getpos('.')
-        silent! normal! "_da}
-        call setpos('.', l:curpos)
-      endif
+      call s:jump_cursor(l:c)
       break
     endif
   endfor
@@ -477,7 +475,7 @@ function! sonictemplate#load_postfix() abort
   for l:tmpldir in reverse(s:tmpldir)
     let l:tmp += split(globpath(join([l:tmpldir, l:ft], '/'), 'pattern.stpl'), "\n")
   endfor
-  if len(l:tmp) ==# 0
+  if empty(l:tmp)
     return
   endif
   let s:pat[l:ft] = {}

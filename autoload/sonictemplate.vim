@@ -60,6 +60,46 @@ function! s:load_meta(path, type, def) abort
   return has_key(l:meta, a:type) ? l:meta[a:type] : a:def
 endfunction
 
+function! s:glob_templates(tmpldir, ft, prefix, lead) abort
+  let l:path = join([a:tmpldir, a:ft], '/')
+  let l:prefer = s:load_meta(l:path, 'prefer-' . a:prefix, [])
+  return sort(map(split(globpath(l:path, a:prefix . '-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'), function('s:sort', [l:prefer]))
+endfunction
+
+function! s:glob_file_templates(tmpldir, ft, name) abort
+  let l:path = join([a:tmpldir, a:ft], '/')
+  let l:prefer = s:load_meta(l:path, 'prefer-file', [])
+  return sort(map(split(globpath(l:path, 'file-' . a:name . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'), function('s:sort', [l:prefer]))
+endfunction
+
+function! s:deduplicate(list) abort
+  let l:seen = {}
+  let l:result = []
+  for l:item in a:list
+    if !has_key(l:seen, l:item)
+      let l:seen[l:item] = 1
+      call add(l:result, l:item)
+    endif
+  endfor
+  return l:result
+endfunction
+
+function! s:apply_filter(candidate, filter) abort
+  if a:filter ==# ''
+    return a:candidate
+  endif
+  let [l:lhs, l:rhs] = [[], []]
+  for l:c in a:candidate
+    let l:ms = matchstr(l:c, a:filter)
+    if l:ms !=# '' && matchstr(l:c, l:ms) ==# 0
+      call add(l:lhs, l:c)
+    else
+      call add(l:rhs, l:c)
+    endif
+  endfor
+  return l:lhs + l:rhs
+endfunction
+
 function! s:sort(prefer, lhs, rhs) abort
   if !empty(a:prefer)
     let [l:lhso, l:rhso] = [9999, 9999]
@@ -118,53 +158,28 @@ function! s:get_candidate(fts, lead, mode) abort
   let l:tmp = []
   if l:prefix ==# 'base'
     for l:tmpldir in s:tmpldir
-      let l:path = join([l:tmpldir, l:ft], '/')
-      let l:prefer = s:load_meta(l:path, 'prefer-file', [])
-      let l:tmp += sort(map(split(globpath(join([l:tmpldir, l:ft], '/'), 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'), function('s:sort', [l:prefer]))
+      let l:tmp += s:glob_file_templates(l:tmpldir, l:ft, expand('%:t:r'))
     endfor
     let l:ft = s:get_raw_filetype()
     if l:ft ==# '' || l:ft ==# 'text'
       for l:tmpldir in s:tmpldir
-        let l:path = join([l:tmpldir, '_'], '/')
-        let l:prefer = s:load_meta(l:path, 'prefer-file', [])
-        let l:tmp += sort(map(split(globpath(l:path, 'file-' . expand('%:t:r') . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'), function('s:sort', [l:prefer]))
+        let l:tmp += s:glob_file_templates(l:tmpldir, '_', expand('%:t:r'))
       endfor
     endif
   endif
   for l:tmpldir in s:tmpldir
     for l:ft in l:fts
-      let l:path = join([l:tmpldir, l:ft], '/')
-      let l:prefer = s:load_meta(l:path, 'prefer-' . l:prefix, [])
-      let l:tmp += sort(map(split(globpath(l:path, l:prefix . '-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'), function('s:sort', [l:prefer]))
+      let l:tmp += s:glob_templates(l:tmpldir, l:ft, l:prefix, a:lead)
     endfor
   endfor
   for l:tmpldir in s:tmpldir
-    let l:path = join([l:tmpldir, '_'], '/')
-    let l:prefer = s:load_meta(l:path, 'prefer-' . l:prefix, [])
-    let l:tmp += sort(map(split(globpath(l:path, l:prefix . '-' . a:lead . '*.*'), "\n"), 'fnamemodify(v:val, ":t:r")[5:]'), function('s:sort', [l:prefer]))
+    let l:tmp += s:glob_templates(l:tmpldir, '_', l:prefix, a:lead)
   endfor
-  let l:candidate = []
-  for l:c in l:tmp
-    if index(l:candidate, l:c) ==# -1
-      call add(l:candidate, l:c)
-    endif
-  endfor
+  let l:candidate = s:deduplicate(l:tmp)
   if l:filter ==# ''
     let l:filter = s:getopt('filter')
   endif
-  if l:filter !=# ''
-    let [l:lhs, l:rhs] = [[], []]
-    for l:c in l:candidate
-      let l:ms = matchstr(l:c, l:filter)
-      if l:ms !=# '' && matchstr(l:c, l:ms) ==# 0
-        call add(l:lhs, l:c)
-      else
-        call add(l:rhs, l:c)
-      endif
-    endfor
-    let l:candidate = l:lhs + l:rhs
-  endif
-  return l:candidate
+  return s:apply_filter(l:candidate, l:filter)
 endfunction
 
 function! sonictemplate#complete_wrap(lead, cmdline, curpos) abort
@@ -252,81 +267,40 @@ function! s:name(default) abort
   return substitute(l:name, '[^a-zA-Z0-9]', '_', 'g')
 endfunction
 
-function! sonictemplate#apply(name, mode, ...) abort
-  let l:name = matchstr(a:name, '\S\+')
-  let l:buffer_is_not_empty = search('[^ \t]', 'wn')
+function! s:find_template_file(name, prefix, fts) abort
   let l:fs = []
-  if a:mode =~# '[vV]'
-    let l:prefix = 'wrap'
-  else
-    let l:prefix = s:getopt('prefix')
-    if l:prefix ==# ''
-      let l:prefix = search('[^ \t]', 'wn') ? 'snip' : 'base'
-    endif
-  endif
-  let l:ft = s:getopt('filetype')
-  if l:ft ==# ''
-    if get(a:000, 0, 0)
-      let l:fts = [sonictemplate#get_filetype(), s:get_raw_filetype(), s:get_filetype(), '_']
-    else
-      let l:fts = [s:get_raw_filetype(), s:get_filetype(), sonictemplate#get_filetype(), '_']
-    endif
-  else
-    let l:fts = [l:ft]
-  endif
-  if l:prefix ==# 'base'
+  if a:prefix ==# 'base'
     for l:tmpldir in s:tmpldir
-      for l:ft in l:fts
+      for l:ft in a:fts
         let l:path = join([l:tmpldir, l:ft], '/')
         let l:prefer = s:load_meta(l:path, 'prefer-file', [])
-        let l:fs += sort(split(globpath(l:path, 'file-' . l:name . '.*'), "\n"), function('s:sort', [l:prefer]))
+        let l:fs += sort(split(globpath(l:path, 'file-' . a:name . '.*'), "\n"), function('s:sort', [l:prefer]))
       endfor
       let l:path = join([l:tmpldir, '_'], '/')
       let l:prefer = s:load_meta(l:path, 'prefer-file', [])
-      let l:fs += sort(split(globpath(l:path, 'file-' . l:name . '.*'), "\n"), function('s:sort', [l:prefer]))
+      let l:fs += sort(split(globpath(l:path, 'file-' . a:name . '.*'), "\n"), function('s:sort', [l:prefer]))
     endfor
   endif
   if empty(l:fs)
     for l:tmpldir in s:tmpldir
-      for l:ft in l:fts
+      for l:ft in a:fts
         if len(l:ft) > 0
           let l:path = join([l:tmpldir, l:ft], '/')
-          let l:prefer = s:load_meta(l:path, 'prefer-' . l:prefix, [])
-          let l:fs += sort(split(globpath(l:path, l:prefix . '-' . l:name . '.*'), "\n"), function('s:sort', [l:prefer]))
+          let l:prefer = s:load_meta(l:path, 'prefer-' . a:prefix, [])
+          let l:fs += sort(split(globpath(l:path, a:prefix . '-' . a:name . '.*'), "\n"), function('s:sort', [l:prefer]))
         endif
       endfor
     endfor
   endif
-  if empty(l:fs)
-    echomsg 'Template ' . l:name . ' is not exists.'
-    return
-  endif
-  let l:f = l:fs[0]
-  if !filereadable(l:f)
-    echomsg 'Template ' . l:name . ' is not exists.'
-    return
-  endif
+  return l:fs
+endfunction
 
-  let l:wrap = ''
-  if a:mode =~# '[vV]'
-    let l:save_regcont = @"
-    let l:save_regtype = getregtype('"')
-    silent! normal! gvc
-    let l:wrap = @"
-    call setreg('"', l:save_regcont, l:save_regtype)
-  endif
-
-  let l:ft = s:get_filetype()
-  let l:ft = l:ft !=# '' ? l:ft : '_'
-  let l:c = join(readfile(l:f), "\n")
-  let l:c = substitute(l:c, '{{_dir_}}', s:dir(), 'g')
-  let l:c = substitute(l:c, '{{_name_}}', s:name('Main'), 'g')
-  let l:c = substitute(l:c, '{{_name_:\([^}]\+\)}}', '\=s:name(submatch(1))', 'g')
-  let l:c = substitute(l:c, '{{_wrap_}}', l:wrap, 'g')
+function! s:resolve_input_vars(content, ft) abort
+  let l:c = a:content
   let l:tmp = l:c
   let l:mx = '{{_input_:\(.\{-}\)}}'
-  if !has_key(s:vars, l:ft)
-    let s:vars[l:ft] = {}
+  if !has_key(s:vars, a:ft)
+    let s:vars[a:ft] = {}
   endif
   let l:vars = []
   while 1
@@ -357,8 +331,13 @@ function! sonictemplate#apply(name, mode, ...) abort
       let l:val = input(l:name . ': ', l:defval)
     endif
     let l:c = substitute(l:c, '\V{{\(_input_\|_var_\):' . l:name . '\(:\[^}]\+\)\{-}}}', '\=l:val', 'g')
-    let s:vars[l:ft][l:name] = l:val
+    let s:vars[a:ft][l:name] = l:val
   endfor
+  return l:c
+endfunction
+
+function! s:resolve_define_vars(content, ft) abort
+  let l:c = a:content
   let l:mx = '{{_define_:\([^:]\+\):\(.\{-}\)}}\s*'
   while 1
     let l:match = matchstr(l:c, l:mx)
@@ -369,55 +348,127 @@ function! sonictemplate#apply(name, mode, ...) abort
     let l:val = eval(substitute(l:match, l:mx, '\2', 'ig'))
     let l:c = substitute(l:c, '{{_define_:' . l:var . ':\(.\{-}\)}}\s*', '', 'g')
     let l:c = substitute(l:c, '\V{{_var_:' . l:var . '}}', '\=l:val', 'g')
-    let s:vars[l:ft][l:var] = l:val
+    let s:vars[a:ft][l:var] = l:val
   endwhile
+  return l:c
+endfunction
+
+function! s:substitute_template_vars(content, ft, wrap) abort
+  let l:c = a:content
+  let l:c = substitute(l:c, '{{_dir_}}', s:dir(), 'g')
+  let l:c = substitute(l:c, '{{_name_}}', s:name('Main'), 'g')
+  let l:c = substitute(l:c, '{{_name_:\([^}]\+\)}}', '\=s:name(submatch(1))', 'g')
+  let l:c = substitute(l:c, '{{_wrap_}}', a:wrap, 'g')
+  let l:c = s:resolve_input_vars(l:c, a:ft)
+  let l:c = s:resolve_define_vars(l:c, a:ft)
   sandbox let l:c = substitute(l:c, '{{_if_:\(.\{-}\);\(.\{-}\)\(;\(.\{-}\)\)\{-}}}', '\=eval(submatch(1))?submatch(2):submatch(4)', 'g')
   sandbox let l:c = substitute(l:c, '{{_expr_:\(.\{-}\)}}', '\=eval(submatch(1))', 'g')
-  silent! let l:c = substitute(l:c, '{{_lang_util_:\(.\{-}\)}}', '\=sonictemplate#lang#{l:ft}#util(submatch(1))', 'g')
-  if empty(l:c)
-    return
-  endif
+  silent! let l:c = substitute(l:c, '{{_lang_util_:\(.\{-}\)}}', '\=sonictemplate#lang#{a:ft}#util(submatch(1))', 'g')
   let l:mx = '{{_filter_:\([a-zA-Z0-9_-]\+\)}}\s*'
   let l:bf = matchstr(l:c, l:mx)
   if !empty(l:bf)
     call s:setopt('filter', substitute(l:bf, l:mx, '\1', ''))
     let l:c = substitute(l:c, l:mx, '', 'g')
   endif
+  return l:c
+endfunction
+
+function! s:insert_into_empty_buffer(c) abort
+  let l:c = substitute(a:c, '{{_inline_}}\s*', '', 'g')
+  if &expandtab || (&shiftwidth && &tabstop != &shiftwidth)
+    let l:c = substitute(l:c, "\t", repeat(' ', shiftwidth()), 'g')
+  endif
+  silent! %d _
+  silent! put = l:c
+  silent! normal! gg"_dd
+  return l:c
+endfunction
+
+function! s:insert_into_buffer(c) abort
+  let l:c = a:c
+  if l:c[len(l:c)-1] ==# "\n"
+    let l:c = l:c[:-2]
+  endif
+  if stridx(l:c, '{{_inline_}}') != -1
+    let l:c = substitute(l:c, '{{_inline_}}', '', 'g')
+    let l:c = join(split(l:c, "\n"), '')
+    let l:oldindentexpr = &indentexpr
+    let &indentexpr = ''
+    noautocmd silent! exe "normal! a\<c-r>=c\<cr>"
+    let &indentexpr = l:oldindentexpr
+    return ''
+  endif
+  let l:line = getline('.')
+  let l:indent = matchstr(l:line, '^\(\s*\)')
+  if l:line !~# '^\s*$'
+    let l:lhs = col('.') > 1 ? l:line[:col('.')-2] : ''
+    let l:rhs = l:line[len(l:lhs):]
+    let l:lhs = l:lhs[len(l:indent):]
+    let l:c = l:lhs . l:c . l:rhs
+  endif
+  let l:c = s:adjust_indent(l:c, l:indent)
+  if line('.') <# line('$')
+    silent! normal! "_dd
+  endif
+  silent! put! =l:c
+  return l:c
+endfunction
+
+function! sonictemplate#apply(name, mode, ...) abort
+  let l:name = matchstr(a:name, '\S\+')
+  let l:buffer_is_not_empty = search('[^ \t]', 'wn')
+  if a:mode =~# '[vV]'
+    let l:prefix = 'wrap'
+  else
+    let l:prefix = s:getopt('prefix')
+    if l:prefix ==# ''
+      let l:prefix = search('[^ \t]', 'wn') ? 'snip' : 'base'
+    endif
+  endif
+  let l:ft = s:getopt('filetype')
+  if l:ft ==# ''
+    if get(a:000, 0, 0)
+      let l:fts = [sonictemplate#get_filetype(), s:get_raw_filetype(), s:get_filetype(), '_']
+    else
+      let l:fts = [s:get_raw_filetype(), s:get_filetype(), sonictemplate#get_filetype(), '_']
+    endif
+  else
+    let l:fts = [l:ft]
+  endif
+  let l:fs = s:find_template_file(l:name, l:prefix, l:fts)
+  if empty(l:fs)
+    echomsg 'Template ' . l:name . ' is not exists.'
+    return
+  endif
+  let l:f = l:fs[0]
+  if !filereadable(l:f)
+    echomsg 'Template ' . l:name . ' is not exists.'
+    return
+  endif
+
+  let l:wrap = ''
+  if a:mode =~# '[vV]'
+    let l:save_regcont = @"
+    let l:save_regtype = getregtype('"')
+    silent! normal! gvc
+    let l:wrap = @"
+    call setreg('"', l:save_regcont, l:save_regtype)
+  endif
+
+  let l:ft = s:get_filetype()
+  let l:ft = l:ft !=# '' ? l:ft : '_'
+  let l:c = join(readfile(l:f), "\n")
+  let l:c = s:substitute_template_vars(l:c, l:ft, l:wrap)
+  if empty(l:c)
+    return
+  endif
 
   if !l:buffer_is_not_empty
-    let l:c = substitute(l:c, '{{_inline_}}\s*', '', 'g')
-    if &expandtab || (&shiftwidth && &tabstop != &shiftwidth)
-      let l:c = substitute(l:c, "\t", repeat(' ', shiftwidth()), 'g')
-    endif
-    silent! %d _
-    silent! put = l:c
-    silent! normal! gg"_dd
+    let l:c = s:insert_into_empty_buffer(l:c)
   else
-    if l:c[len(l:c)-1] ==# "\n"
-      let l:c = l:c[:-2]
-    endif
-    if stridx(l:c, '{{_inline_}}') != -1
-      let l:c = substitute(l:c, '{{_inline_}}', '', 'g')
-      let l:c = join(split(l:c, "\n"), '')
-      let l:oldindentexpr = &indentexpr
-      let &indentexpr = ''
-      noautocmd silent! exe "normal! a\<c-r>=c\<cr>"
-      let &indentexpr = l:oldindentexpr
+    let l:c = s:insert_into_buffer(l:c)
+    if l:c ==# ''
       return
-    else
-      let l:line = getline('.')
-      let l:indent = matchstr(l:line, '^\(\s*\)')
-      if l:line !~# '^\s*$'
-        let l:lhs = col('.') > 1 ? l:line[:col('.')-2] : ''
-        let l:rhs = l:line[len(l:lhs):]
-        let l:lhs = l:lhs[len(l:indent):]
-        let l:c = l:lhs . l:c . l:rhs
-      endif
-      let l:c = s:adjust_indent(l:c, l:indent)
-      if line('.') <# line('$')
-        silent! normal! "_dd
-      endif
-      silent! put! =l:c
     endif
   endif
   call s:jump_cursor(l:c)

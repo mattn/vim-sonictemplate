@@ -414,9 +414,8 @@ function! s:insert_into_buffer(c) abort
   return l:c
 endfunction
 
-function! sonictemplate#apply(name, mode, ...) abort
+function! s:resolve_template_files(name, mode, intelligent) abort
   let l:name = matchstr(a:name, '\S\+')
-  let l:buffer_is_not_empty = search('[^ \t]', 'wn')
   if a:mode =~# '[vV]'
     let l:prefix = 'wrap'
   else
@@ -427,7 +426,7 @@ function! sonictemplate#apply(name, mode, ...) abort
   endif
   let l:ft = s:getopt('filetype')
   if l:ft ==# ''
-    if get(a:000, 0, 0)
+    if a:intelligent
       let l:fts = [sonictemplate#get_filetype(), s:get_raw_filetype(), s:get_filetype(), '_']
     else
       let l:fts = [s:get_raw_filetype(), s:get_filetype(), sonictemplate#get_filetype(), '_']
@@ -435,7 +434,18 @@ function! sonictemplate#apply(name, mode, ...) abort
   else
     let l:fts = [l:ft]
   endif
-  let l:fs = s:find_template_file(l:name, l:prefix, l:fts)
+  return s:find_template_file(l:name, l:prefix, l:fts)
+endfunction
+
+function! sonictemplate#find_template_file(name, mode, ...) abort
+  let l:fs = s:resolve_template_files(a:name, a:mode, get(a:000, 0, 0))
+  return empty(l:fs) ? '' : l:fs[0]
+endfunction
+
+function! sonictemplate#apply(name, mode, ...) abort
+  let l:name = matchstr(a:name, '\S\+')
+  let l:buffer_is_not_empty = search('[^ \t]', 'wn')
+  let l:fs = s:resolve_template_files(a:name, a:mode, get(a:000, 0, 0))
   if empty(l:fs)
     echomsg 'Template ' . l:name . ' is not exists.'
     return
